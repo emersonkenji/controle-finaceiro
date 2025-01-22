@@ -5,7 +5,7 @@ import { Button } from '@/Components/ui/button';
 export default function Pagination({ links }) {
     return (
         <div className="flex items-center justify-between">
-            <div className="flex-1 flex justify-between sm:hidden">
+            <div className="flex justify-between flex-1 sm:hidden">
                 {links.prev && (
                     <Link href={links.prev}>
                         <Button variant="outline" size="sm">
@@ -34,18 +34,18 @@ export default function Pagination({ links }) {
                     </p>
                 </div>
                 <div>
-                    <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Paginação">
+                    <nav className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm" aria-label="Paginação">
                         {links.links.map((link, index) => {
                             if (link.url === null) {
                                 return (
                                     <span
                                         key={index}
-                                        className="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-500"
+                                        className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300"
                                     >
                                         {link.label === '&laquo; Previous' ? (
-                                            <ChevronLeft className="h-4 w-4" />
+                                            <ChevronLeft className="w-4 h-4" />
                                         ) : link.label === 'Next &raquo;' ? (
-                                            <ChevronRight className="h-4 w-4" />
+                                            <ChevronRight className="w-4 h-4" />
                                         ) : (
                                             link.label
                                         )}
@@ -64,9 +64,9 @@ export default function Pagination({ links }) {
                                     }`}
                                 >
                                     {link.label === '&laquo; Previous' ? (
-                                        <ChevronLeft className="h-4 w-4" />
+                                        <ChevronLeft className="w-4 h-4" />
                                     ) : link.label === 'Next &raquo;' ? (
-                                        <ChevronRight className="h-4 w-4" />
+                                        <ChevronRight className="w-4 h-4" />
                                     ) : (
                                         link.label
                                     )}

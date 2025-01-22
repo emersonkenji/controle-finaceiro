@@ -13,21 +13,24 @@ class Customer extends Model
     protected $fillable = [
         'name',
         'email',
-        'cpf',
+        'document',
         'phone',
-        'category',
-        'status',
+        'customer_category_id',
         'address',
-        'score',
-        'total_purchases',
-        'last_purchase_at'
+        'notes',
+        'birth_date',
+        'type'
     ];
 
     protected $casts = [
         'address' => 'array',
-        'last_purchase_at' => 'datetime',
-        'total_purchases' => 'decimal:2'
+        'birth_date' => 'date',
     ];
+
+    public function category()
+    {
+        return $this->belongsTo(CustomerCategory::class, 'customer_category_id');
+    }
 
     public function documents()
     {

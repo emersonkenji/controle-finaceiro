@@ -4,8 +4,7 @@ import {
     Download,
     X,
     Mail,
-    FileSpreadsheet,
-    FilePdf
+    FileSpreadsheet
 } from 'lucide-react';
 
 export default function ExportReportModal({ isOpen, onClose, onExport }) {
@@ -56,7 +55,7 @@ export default function ExportReportModal({ isOpen, onClose, onExport }) {
                                         : 'border-gray-200 hover:border-gray-300'
                                 }`}
                             >
-                                <FilePdf className={`h-6 w-6 ${
+                                <FileSpreadsheet className={`h-6 w-6 ${
                                     format === 'pdf' ? 'text-blue-500' : 'text-gray-400'
                                 }`} />
                                 <span className={`mt-2 text-sm ${

@@ -10,14 +10,79 @@ class CustomerCategoryController extends Controller
 {
     public function index()
     {
-        $categories = [
-            ['id' => 'regular', 'name' => 'Regular', 'description' => 'Cliente padrão'],
-            ['id' => 'vip', 'name' => 'VIP', 'description' => 'Cliente VIP com benefícios especiais'],
-            ['id' => 'premium', 'name' => 'Premium', 'description' => 'Cliente Premium com benefícios exclusivos']
-        ];
+        $categories = CustomerCategory::query()
+            ->withCount('customers')
+            ->orderBy('order')
+            ->get();
 
         return Inertia::render('Customers/Categories/Index', [
             'categories' => $categories
         ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('Customers/Categories/Create', [
+            'categories' => CustomerCategory::where('parent_id', null)->get()
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'parent_id' => 'nullable|exists:customer_categories,id',
+            'order' => 'nullable|integer',
+            'active' => 'boolean'
+        ]);
+
+        CustomerCategory::create($validated);
+
+        return redirect()
+            ->route('customers.categories.index')
+            ->with('success', 'Categoria criada com sucesso!');
+    }
+
+    public function edit(CustomerCategory $category)
+    {
+        return Inertia::render('Customers/Categories/Edit', [
+            'category' => $category,
+            'categories' => CustomerCategory::where('parent_id', null)
+                ->where('id', '!=', $category->id)
+                ->get()
+        ]);
+    }
+
+    public function update(Request $request, CustomerCategory $category)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'parent_id' => 'nullable|exists:customer_categories,id',
+            'order' => 'nullable|integer',
+            'active' => 'boolean'
+        ]);
+
+        $category->update($validated);
+
+        return redirect()
+            ->route('customers.categories.index')
+            ->with('success', 'Categoria atualizada com sucesso!');
+    }
+
+    public function destroy(CustomerCategory $category)
+    {
+        if ($category->customers()->exists()) {
+            return redirect()
+                ->route('customers.categories.index')
+                ->with('error', 'Não é possível excluir uma categoria que possui clientes!');
+        }
+
+        $category->delete();
+
+        return redirect()
+            ->route('customers.categories.index')
+            ->with('success', 'Categoria excluída com sucesso!');
     }
 }

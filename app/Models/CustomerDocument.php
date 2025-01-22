@@ -12,15 +12,21 @@ class CustomerDocument extends Model
 
     protected $fillable = [
         'customer_id',
-        'type',
         'name',
+        'description',
         'path',
+        'type',
         'size',
-        'mime_type'
+        'user_id'
     ];
 
     public function customer()
     {
         return $this->belongsTo(Customer::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

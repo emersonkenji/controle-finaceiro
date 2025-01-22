@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { useState, useCallback, useEffect } from 'react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
     Table,
@@ -38,7 +38,10 @@ import {
     ArrowUp,
     ArrowDown,
     Download,
-    Copy
+    Copy,
+    Eye,
+    Badge,
+    MoreHorizontal,
 } from 'lucide-react';
 import Pagination from '@/Components/Pagination';
 import {
@@ -51,16 +54,33 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/Components/ui/alert-dialog";
+import { useDebounce } from '@/hooks/useDebounce';
+import axios from 'axios';
 
 export default function ProductsIndex({ products, categories, filters }) {
     const [search, setSearch] = useState(filters.search || '');
-    const [selectedCategory, setSelectedCategory] = useState(filters.category || '');
-    const [selectedStatus, setSelectedStatus] = useState(filters.status || '');
+    const [selectedCategory, setSelectedCategory] = useState(filters.category_id || 'all');
+    const [selectedStatus, setSelectedStatus] = useState(filters.status || 'all');
     const [sortField, setSortField] = useState(filters.sort || 'name');
     const [sortDirection, setSortDirection] = useState(filters.direction || 'asc');
     const [productToDelete, setProductToDelete] = useState(null);
+    const [processing, setProcessing] = useState(false);
 
-    const { post, processing } = useForm();
+    const { post, processing: formProcessing } = useForm();
+
+    const debouncedSearch = useDebounce(search, 300);
+
+    useEffect(() => {
+        router.get(route('products.index'), {
+            search: debouncedSearch,
+            category_id: selectedCategory === 'all' ? '' : selectedCategory,
+            status: selectedStatus === 'all' ? '' : selectedStatus
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: true
+        });
+    }, [debouncedSearch, selectedCategory, selectedStatus]);
 
     const handleSort = (field) => {
         if (field === sortField) {
@@ -84,15 +104,29 @@ export default function ProductsIndex({ products, categories, filters }) {
     };
 
     const handleExport = () => {
-        post(route('products.export'), {
-            data: {
-                search,
-                category: selectedCategory,
-                status: selectedStatus,
-                sort: sortField,
-                direction: sortDirection
-            },
-            preserveScroll: true
+        setProcessing(true);
+        axios.post(route('products.export'), {
+            search,
+            category_id: selectedCategory === 'all' ? '' : selectedCategory,
+            status: selectedStatus === 'all' ? '' : selectedStatus
+        }, {
+            responseType: 'blob'
+        })
+        .then(response => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'produtos.xlsx');
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            window.URL.revokeObjectURL(url);
+        })
+        .catch(error => {
+            console.error('Erro ao exportar produtos:', error);
+        })
+        .finally(() => {
+            setProcessing(false);
         });
     };
 
@@ -152,8 +186,8 @@ export default function ProductsIndex({ products, categories, filters }) {
                                         <SelectValue placeholder="Categoria" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">Todas as categorias</SelectItem>
-                                        {categories.map((category) => (
+                                        <SelectItem value="all">Todas as categorias</SelectItem>
+                                        {categories?.length > 0 && categories.map((category) => (
                                             <SelectItem key={category.id} value={category.id.toString()}>
                                                 {category.name}
                                             </SelectItem>
@@ -168,7 +202,7 @@ export default function ProductsIndex({ products, categories, filters }) {
                                         <SelectValue placeholder="Status" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">Todos os status</SelectItem>
+                                        <SelectItem value="all">Todos os status</SelectItem>
                                         <SelectItem value="active">Ativo</SelectItem>
                                         <SelectItem value="inactive">Inativo</SelectItem>
                                     </SelectContent>
@@ -235,9 +269,9 @@ export default function ProductsIndex({ products, categories, filters }) {
                                     {products.data.map((product) => (
                                         <TableRow key={product.id}>
                                             <TableCell>
-                                                {product.images?.[0] ? (
+                                                {product.images?.length > 0 ? (
                                                     <img
-                                                        src={`/storage/${product.images[0].path}`}
+                                                        src={`/storage/${product.images.find(img => img.is_main)?.path || product.images[0].path}`}
                                                         alt={product.name}
                                                         className="object-cover w-16 h-16 rounded-lg"
                                                     />
@@ -256,77 +290,54 @@ export default function ProductsIndex({ products, categories, filters }) {
                                             <TableCell>{product.sku}</TableCell>
                                             <TableCell>
                                                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                                    {product.category.name}
+                                                    {product.category?.name || '-'}
                                                 </span>
                                             </TableCell>
                                             <TableCell>{formatCurrency(product.price)}</TableCell>
                                             <TableCell>
-                                                <div className="flex items-center gap-1">
-                                                    <Box className={`h-4 w-4 ${
-                                                        product.stock <= product.min_stock
-                                                            ? 'text-red-500'
-                                                            : 'text-green-500'
-                                                    }`} />
+                                                <div className="flex items-center gap-2">
                                                     <span>{product.stock}</span>
+                                                    {product.stock <= product.min_stock && (
+                                                        <Badge variant="destructive">Baixo</Badge>
+                                                    )}
                                                 </div>
                                             </TableCell>
                                             <TableCell>
-                                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                    product.status === 'active'
-                                                        ? 'bg-green-100 text-green-800'
-                                                        : 'bg-gray-100 text-gray-800'
-                                                }`}>
+                                                <Badge variant={product.status === 'active' ? 'success' : 'secondary'}>
                                                     {product.status === 'active' ? 'Ativo' : 'Inativo'}
-                                                </span>
+                                                </Badge>
                                             </TableCell>
                                             <TableCell>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
                                                         <Button variant="ghost" className="w-8 h-8 p-0">
-                                                            <MoreVertical className="w-4 h-4" />
+                                                            <MoreHorizontal className="w-4 h-4" />
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <Link href={route('products.edit', product.id)}>
-                                                            <DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('products.show', product.id)}>
+                                                                <Eye className="w-4 h-4 mr-2" />
+                                                                Visualizar
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('products.edit', product.id)}>
                                                                 <Edit className="w-4 h-4 mr-2" />
                                                                 Editar
-                                                            </DropdownMenuItem>
-                                                        </Link>
-                                                        <Link href={route('products.variations.index', product.id)}>
-                                                            <DropdownMenuItem>
+                                                            </Link>
+                                                        </DropdownMenuItem>
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('products.variations.index', product.id)}>
                                                                 <Layers className="w-4 h-4 mr-2" />
                                                                 Variações
-                                                            </DropdownMenuItem>
-                                                        </Link>
-                                                        <Link href={route('products.stock.index', product.id)}>
-                                                            <DropdownMenuItem>
-                                                                <Box className="w-4 h-4 mr-2" />
-                                                                Estoque
-                                                            </DropdownMenuItem>
-                                                        </Link>
-                                                        <Link href={route('products.stock.history', product.id)}>
-                                                            <DropdownMenuItem>
-                                                                <History className="w-4 h-4 mr-2" />
-                                                                Histórico
-                                                            </DropdownMenuItem>
-                                                        </Link>
-                                                        <DropdownMenuItem
-                                                            onClick={() => {
-                                                                post(route('products.duplicate', product.id), {
-                                                                    preserveScroll: true,
-                                                                });
-                                                            }}
-                                                        >
-                                                            <Copy className="w-4 h-4 mr-2" />
-                                                            Duplicar
+                                                            </Link>
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            className="text-red-600"
-                                                            onClick={() => setProductToDelete(product)}
-                                                        >
-                                                            <Trash2 className="w-4 h-4 mr-2" />
-                                                            Excluir
+                                                        <DropdownMenuItem asChild>
+                                                            <Link href={route('products.stock.index', product.id)}>
+                                                                <Package className="w-4 h-4 mr-2" />
+                                                                Estoque
+                                                            </Link>
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>
@@ -361,9 +372,9 @@ export default function ProductsIndex({ products, categories, filters }) {
                         <AlertDialogAction
                             className="bg-red-600 hover:bg-red-700"
                             onClick={handleDelete}
-                            disabled={processing}
+                            disabled={formProcessing}
                         >
-                            {processing ? 'Excluindo...' : 'Excluir'}
+                            {formProcessing ? 'Excluindo...' : 'Excluir'}
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>

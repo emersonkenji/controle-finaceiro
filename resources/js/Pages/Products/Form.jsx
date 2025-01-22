@@ -23,23 +23,19 @@ import {
 import { Switch } from '@/Components/ui/switch';
 import { Label } from '@/Components/ui/label';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import axios from 'axios';
 
 export default function ProductForm({ product, categories }) {
     const { data, setData, post, put, processing, errors } = useForm({
         name: product?.name || '',
         description: product?.description || '',
-        category_id: product?.category_id?.toString() || '',
+        category_id: product?.category_id?.toString() || 'none',
         price: product?.price || '',
         cost_price: product?.cost_price || '',
         stock: product?.stock || '',
         min_stock: product?.min_stock || '',
         status: product?.status || 'active',
         barcode: product?.barcode || '',
-        weight: product?.weight || '',
-        height: product?.height || '',
-        width: product?.width || '',
-        length: product?.length || '',
-        featured: product?.featured || false,
         attributes: product?.attributes || {},
         images: []
     });
@@ -59,10 +55,27 @@ export default function ProductForm({ product, categories }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        const formData = new FormData();
+        Object.keys(data).forEach(key => {
+            if (key === 'images') {
+                Array.from(data.images).forEach(file => {
+                    formData.append('images[]', file);
+                });
+            } else if (key === 'attributes' && typeof data[key] === 'object') {
+                formData.append(key, JSON.stringify(data[key]));
+            } else {
+                formData.append(key, data[key]);
+            }
+        });
+
         if (product) {
-            put(route('products.update', product.id));
+            post(route('products.update', product.id), {
+                _method: 'PUT',
+                ...formData
+            });
         } else {
-            post(route('products.store'));
+            post(route('products.store'), formData);
         }
     };
 
@@ -83,26 +96,26 @@ export default function ProductForm({ product, categories }) {
     };
 
     const removeExistingImage = (imageId) => {
-        post(route('products.images.destroy', imageId), {
-            method: 'delete',
-            preserveScroll: true,
-            onSuccess: () => {
+        axios.delete(route('products.images.destroy', imageId))
+            .then(() => {
                 setExistingImages(existingImages.filter(img => img.id !== imageId));
-            }
-        });
+            })
+            .catch(error => {
+                console.error('Erro ao excluir imagem:', error);
+            });
     };
 
     const setMainImage = (imageId) => {
-        post(route('products.images.main', imageId), {
-            method: 'post',
-            preserveScroll: true,
-            onSuccess: () => {
+        axios.post(route('products.images.main', imageId))
+            .then(() => {
                 setExistingImages(existingImages.map(img => ({
                     ...img,
                     is_main: img.id === imageId
                 })));
-            }
-        });
+            })
+            .catch(error => {
+                console.error('Erro ao definir imagem principal:', error);
+            });
     };
 
     const handleDragEnd = (result) => {
@@ -194,6 +207,7 @@ export default function ProductForm({ product, categories }) {
                                                 <SelectValue placeholder="Selecione uma categoria" />
                                             </SelectTrigger>
                                             <SelectContent>
+                                                <SelectItem value="none">Selecione uma categoria</SelectItem>
                                                 {categories.map(category => (
                                                     <SelectItem
                                                         key={category.id}
@@ -235,6 +249,7 @@ export default function ProductForm({ product, categories }) {
                                                 id="price"
                                                 type="number"
                                                 step="0.01"
+                                                min="0"
                                                 value={data.price}
                                                 onChange={e => setData('price', e.target.value)}
                                                 error={errors.price}
@@ -250,6 +265,7 @@ export default function ProductForm({ product, categories }) {
                                                 id="cost_price"
                                                 type="number"
                                                 step="0.01"
+                                                min="0"
                                                 value={data.cost_price}
                                                 onChange={e => setData('cost_price', e.target.value)}
                                                 error={errors.cost_price}
@@ -266,6 +282,7 @@ export default function ProductForm({ product, categories }) {
                                             <Input
                                                 id="stock"
                                                 type="number"
+                                                min="0"
                                                 value={data.stock}
                                                 onChange={e => setData('stock', e.target.value)}
                                                 error={errors.stock}
@@ -280,6 +297,7 @@ export default function ProductForm({ product, categories }) {
                                             <Input
                                                 id="min_stock"
                                                 type="number"
+                                                min="0"
                                                 value={data.min_stock}
                                                 onChange={e => setData('min_stock', e.target.value)}
                                                 error={errors.min_stock}
@@ -291,13 +309,13 @@ export default function ProductForm({ product, categories }) {
                                     </div>
 
                                     <div>
-                                        <Label>Status</Label>
+                                        <Label htmlFor="status">Status</Label>
                                         <Select
                                             value={data.status}
                                             onValueChange={value => setData('status', value)}
                                         >
                                             <SelectTrigger>
-                                                <SelectValue />
+                                                <SelectValue placeholder="Selecione o status" />
                                             </SelectTrigger>
                                             <SelectContent>
                                                 <SelectItem value="active">Ativo</SelectItem>
@@ -307,15 +325,6 @@ export default function ProductForm({ product, categories }) {
                                         {errors.status && (
                                             <p className="mt-1 text-sm text-red-600">{errors.status}</p>
                                         )}
-                                    </div>
-
-                                    <div className="flex items-center space-x-2">
-                                        <Switch
-                                            id="featured"
-                                            checked={data.featured}
-                                            onCheckedChange={checked => setData('featured', checked)}
-                                        />
-                                        <Label htmlFor="featured">Produto em Destaque</Label>
                                     </div>
                                 </div>
                             </div>

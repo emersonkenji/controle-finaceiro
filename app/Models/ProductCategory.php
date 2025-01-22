@@ -17,11 +17,12 @@ class ProductCategory extends Model
         'description',
         'parent_id',
         'order',
-        'active'
+        'status'
     ];
 
     protected $casts = [
-        'active' => 'boolean'
+        'active' => 'boolean',
+        'order' => 'integer'
     ];
 
     protected static function boot()

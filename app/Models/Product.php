@@ -22,29 +22,16 @@ class Product extends Model
         'cost_price',
         'stock',
         'min_stock',
-        'max_stock',
-        'active',
-        'featured',
-        'brand',
-        'unit',
-        'weight',
-        'height',
-        'width',
-        'length'
+        'status',
+        'attributes'
     ];
 
     protected $casts = [
-        'active' => 'boolean',
-        'featured' => 'boolean',
         'price' => 'decimal:2',
         'cost_price' => 'decimal:2',
-        'stock' => 'decimal:2',
-        'min_stock' => 'decimal:2',
-        'max_stock' => 'decimal:2',
-        'weight' => 'decimal:2',
-        'height' => 'decimal:2',
-        'width' => 'decimal:2',
-        'length' => 'decimal:2'
+        'stock' => 'integer',
+        'min_stock' => 'integer',
+        'attributes' => 'array'
     ];
 
     protected static function boot()
@@ -57,6 +44,9 @@ class Product extends Model
             }
             if (empty($product->sku)) {
                 $product->sku = strtoupper(uniqid());
+            }
+            if (empty($product->status)) {
+                $product->status = 'active';
             }
         });
     }

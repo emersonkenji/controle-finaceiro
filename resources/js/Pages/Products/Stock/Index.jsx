@@ -154,7 +154,7 @@ export default function StockIndex({ product }) {
                                                                 <SelectValue placeholder="Selecione uma variação" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                <SelectItem value="">Produto Principal</SelectItem>
+                                                                <SelectItem value="none">Produto Principal</SelectItem>
                                                                 {product.variations.map(variation => (
                                                                     <SelectItem
                                                                         key={variation.id}

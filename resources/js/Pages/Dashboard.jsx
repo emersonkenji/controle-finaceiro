@@ -145,14 +145,14 @@ export default function Dashboard() {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
                         Dashboard
                     </h2>
                     <select
                         value={period}
                         onChange={(e) => setPeriod(e.target.value)}
-                        className="rounded-lg border-gray-300 text-sm"
+                        className="text-sm border-gray-300 rounded-lg"
                     >
                         <option value="day">Hoje</option>
                         <option value="week">Esta Semana</option>
@@ -166,20 +166,20 @@ export default function Dashboard() {
             <Head title="Dashboard" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     {/* KPIs Principais */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                    <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
                         {/* Vendas */}
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center gap-3 mb-2">
-                                <ShoppingCart className="h-5 w-5 text-blue-500" />
+                                <ShoppingCart className="w-5 h-5 text-blue-500" />
                                 <h3 className="text-sm font-medium text-gray-500">Total em Vendas</h3>
                             </div>
                             <p className="text-2xl font-bold text-gray-900">
                                 {formatCurrency(metrics.totalSales)}
                             </p>
                             <div className="flex items-center gap-1 mt-2 text-sm">
-                                <TrendingUp className="h-4 w-4 text-green-500" />
+                                <TrendingUp className="w-4 h-4 text-green-500" />
                                 <span className="text-green-600">+{metrics.salesGrowth}%</span>
                                 <span className="text-gray-500">vs. mês anterior</span>
                             </div>
@@ -190,16 +190,16 @@ export default function Dashboard() {
                         </div>
 
                         {/* Financeiro */}
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center gap-3 mb-2">
-                                <DollarSign className="h-5 w-5 text-green-500" />
+                                <DollarSign className="w-5 h-5 text-green-500" />
                                 <h3 className="text-sm font-medium text-gray-500">Financeiro</h3>
                             </div>
                             <p className="text-2xl font-bold text-gray-900">
                                 {formatCurrency(metrics.totalRevenue)}
                             </p>
                             <div className="flex items-center gap-1 mt-2 text-sm">
-                                <TrendingUp className="h-4 w-4 text-green-500" />
+                                <TrendingUp className="w-4 h-4 text-green-500" />
                                 <span className="text-green-600">+{metrics.revenueGrowth}%</span>
                                 <span className="text-gray-500">vs. mês anterior</span>
                             </div>
@@ -210,16 +210,16 @@ export default function Dashboard() {
                         </div>
 
                         {/* Estoque */}
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center gap-3 mb-2">
-                                <Package className="h-5 w-5 text-yellow-500" />
+                                <Package className="w-5 h-5 text-yellow-500" />
                                 <h3 className="text-sm font-medium text-gray-500">Estoque</h3>
                             </div>
                             <p className="text-2xl font-bold text-gray-900">
                                 {metrics.totalProducts}
                             </p>
                             <div className="flex items-center gap-1 mt-2 text-sm">
-                                <AlertTriangle className="h-4 w-4 text-red-500" />
+                                <AlertTriangle className="w-4 h-4 text-red-500" />
                                 <span className="text-red-600">{metrics.lowStock} produtos</span>
                                 <span className="text-gray-500">com estoque baixo</span>
                             </div>
@@ -230,16 +230,16 @@ export default function Dashboard() {
                         </div>
 
                         {/* Clientes */}
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center gap-3 mb-2">
-                                <Users className="h-5 w-5 text-purple-500" />
+                                <Users className="w-5 h-5 text-purple-500" />
                                 <h3 className="text-sm font-medium text-gray-500">Clientes</h3>
                             </div>
                             <p className="text-2xl font-bold text-gray-900">
                                 {metrics.totalCustomers}
                             </p>
                             <div className="flex items-center gap-1 mt-2 text-sm">
-                                <TrendingUp className="h-4 w-4 text-green-500" />
+                                <TrendingUp className="w-4 h-4 text-green-500" />
                                 <span className="text-green-600">+{metrics.customerGrowth}%</span>
                                 <span className="text-gray-500">{metrics.newCustomers} novos</span>
                             </div>
@@ -256,12 +256,12 @@ export default function Dashboard() {
                     </div>
 
                     {/* Gráficos */}
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-3">
                         {/* Gráfico de Performance */}
-                        <div className="lg:col-span-2 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm lg:col-span-2 sm:rounded-lg">
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-lg font-medium text-gray-900">Performance</h3>
-                                <BarChart3 className="h-5 w-5 text-gray-400" />
+                                <BarChart3 className="w-5 h-5 text-gray-400" />
                             </div>
                             <div className="h-80">
                                 <FinancialChart
@@ -287,32 +287,32 @@ export default function Dashboard() {
                         </div>
 
                         {/* Contas */}
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                            <h3 className="text-lg font-medium text-gray-900 mb-6">Contas</h3>
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                            <h3 className="mb-6 text-lg font-medium text-gray-900">Contas</h3>
                             <div className="space-y-6">
                                 <div>
-                                    <div className="flex items-center justify-between text-sm mb-2">
+                                    <div className="flex items-center justify-between mb-2 text-sm">
                                         <span className="text-gray-500">A Receber</span>
                                         <div className="flex items-center gap-1 text-green-600">
-                                            <ArrowUpRight className="h-4 w-4" />
+                                            <ArrowUpRight className="w-4 h-4" />
                                             {formatCurrency(metrics.accountsReceivable)}
                                         </div>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2">
-                                        <div className="bg-green-500 h-2 rounded-full" style={{ width: '65%' }}></div>
+                                    <div className="w-full h-2 bg-gray-200 rounded-full">
+                                        <div className="h-2 bg-green-500 rounded-full" style={{ width: '65%' }}></div>
                                     </div>
                                 </div>
 
                                 <div>
-                                    <div className="flex items-center justify-between text-sm mb-2">
+                                    <div className="flex items-center justify-between mb-2 text-sm">
                                         <span className="text-gray-500">A Pagar</span>
                                         <div className="flex items-center gap-1 text-red-600">
-                                            <ArrowDownRight className="h-4 w-4" />
+                                            <ArrowDownRight className="w-4 h-4" />
                                             {formatCurrency(metrics.accountsPayable)}
                                         </div>
                                     </div>
-                                    <div className="w-full bg-gray-200 rounded-full h-2">
-                                        <div className="bg-red-500 h-2 rounded-full" style={{ width: '45%' }}></div>
+                                    <div className="w-full h-2 bg-gray-200 rounded-full">
+                                        <div className="h-2 bg-red-500 rounded-full" style={{ width: '45%' }}></div>
                                     </div>
                                 </div>
                             </div>
@@ -320,12 +320,12 @@ export default function Dashboard() {
                     </div>
 
                     {/* Gráfico de Entregas e Produtos Mais Vendidos */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                         {/* Gráfico de Entregas */}
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-lg font-medium text-gray-900">Status das Entregas</h3>
-                                <Truck className="h-5 w-5 text-gray-400" />
+                                <Truck className="w-5 h-5 text-gray-400" />
                             </div>
                             <div className="h-80">
                                 <DeliveryChart data={deliveryData} />
@@ -333,8 +333,8 @@ export default function Dashboard() {
                         </div>
 
                         {/* Produtos Mais Vendidos */}
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                            <h3 className="text-lg font-medium text-gray-900 mb-6">Produtos Mais Vendidos</h3>
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                            <h3 className="mb-6 text-lg font-medium text-gray-900">Produtos Mais Vendidos</h3>
                             <div className="space-y-4">
                                 {metrics.topSellers.map((product, index) => (
                                     <div key={product.name} className="flex items-center justify-between">

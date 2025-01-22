@@ -11,11 +11,27 @@ import {
     Filter,
     Calendar,
     Users,
-    Building2
+    Building2,
+    ArrowUpRight,
+    ArrowDownRight
 } from 'lucide-react';
 import FinancialChart from '@/Components/Charts/FinancialChart';
+import { format, subMonths } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+    BarChart,
+    Bar
+} from 'recharts';
 
-export default function Dashboard() {
+export default function Dashboard({ summary, cashFlow, forecast }) {
     const [period, setPeriod] = useState('month');
 
     // Dados de exemplo - posteriormente virão do backend
@@ -90,10 +106,14 @@ export default function Dashboard() {
         }).format(value / 100);
     };
 
+    function formatDate(date) {
+        return format(new Date(date), 'MMM/yyyy', { locale: ptBR });
+    }
+
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex justify-between items-center">
+                <div className="flex items-center justify-between">
                     <h2 className="text-xl font-semibold leading-tight text-gray-800">
                         Dashboard Financeiro
                     </h2>
@@ -101,7 +121,7 @@ export default function Dashboard() {
                         <select
                             value={period}
                             onChange={(e) => setPeriod(e.target.value)}
-                            className="rounded-lg border-gray-300 text-sm"
+                            className="text-sm border-gray-300 rounded-lg"
                         >
                             <option value="week">Esta Semana</option>
                             <option value="month">Este Mês</option>
@@ -109,7 +129,7 @@ export default function Dashboard() {
                             <option value="year">Este Ano</option>
                         </select>
                         <button className="flex items-center gap-2 px-4 py-2 bg-white border rounded-lg hover:bg-gray-50">
-                            <Filter className="h-5 w-5 text-gray-500" />
+                            <Filter className="w-5 h-5 text-gray-500" />
                             Filtros
                         </button>
                     </div>
@@ -119,40 +139,40 @@ export default function Dashboard() {
             <Head title="Dashboard Financeiro" />
 
             <div className="py-12">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     {/* KPIs */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div className="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2 lg:grid-cols-4">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center gap-3 mb-2">
-                                <DollarSign className="h-5 w-5 text-blue-500" />
+                                <DollarSign className="w-5 h-5 text-blue-500" />
                                 <h3 className="text-sm font-medium text-gray-500">Total em Despesas</h3>
                             </div>
                             <p className="text-2xl font-bold text-gray-900">
                                 {formatCurrency(metrics.totalExpenses)}
                             </p>
                             <div className="flex items-center gap-1 mt-2 text-sm">
-                                <TrendingUp className="h-4 w-4 text-green-500" />
+                                <TrendingUp className="w-4 h-4 text-green-500" />
                                 <span className="text-green-600">+{metrics.monthlyTrend}%</span>
                                 <span className="text-gray-500">vs. mês anterior</span>
                             </div>
                         </div>
 
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center gap-3 mb-2">
-                                <Clock className="h-5 w-5 text-yellow-500" />
+                                <Clock className="w-5 h-5 text-yellow-500" />
                                 <h3 className="text-sm font-medium text-gray-500">Tempo Médio de Aprovação</h3>
                             </div>
                             <p className="text-2xl font-bold text-gray-900">
                                 {metrics.averageApprovalTime}
                             </p>
-                            <p className="text-sm text-gray-500 mt-2">
+                            <p className="mt-2 text-sm text-gray-500">
                                 Meta: 1 dia útil
                             </p>
                         </div>
 
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center gap-3 mb-2">
-                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                <CheckCircle className="w-5 h-5 text-green-500" />
                                 <h3 className="text-sm font-medium text-gray-500">Taxa de Aprovação</h3>
                             </div>
                             <p className="text-2xl font-bold text-gray-900">
@@ -165,26 +185,26 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center gap-3 mb-2">
-                                <Users className="h-5 w-5 text-purple-500" />
+                                <Users className="w-5 h-5 text-purple-500" />
                                 <h3 className="text-sm font-medium text-gray-500">Despesas Pendentes</h3>
                             </div>
                             <p className="text-2xl font-bold text-gray-900">
                                 {metrics.pendingCount}
                             </p>
-                            <p className="text-sm text-gray-500 mt-2">
+                            <p className="mt-2 text-sm text-gray-500">
                                 Aguardando aprovação
                             </p>
                         </div>
                     </div>
 
                     {/* Gráficos */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                    <div className="grid grid-cols-1 gap-6 mb-6 lg:grid-cols-2">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-lg font-medium text-gray-900">Aprovações por Dia</h3>
-                                <Calendar className="h-5 w-5 text-gray-400" />
+                                <Calendar className="w-5 h-5 text-gray-400" />
                             </div>
                             <div className="h-80">
                                 <FinancialChart
@@ -209,10 +229,10 @@ export default function Dashboard() {
                             </div>
                         </div>
 
-                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                        <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="flex items-center justify-between mb-6">
                                 <h3 className="text-lg font-medium text-gray-900">Distribuição por Departamento</h3>
-                                <Building2 className="h-5 w-5 text-gray-400" />
+                                <Building2 className="w-5 h-5 text-gray-400" />
                             </div>
                             <div className="h-80">
                                 <FinancialChart
@@ -231,8 +251,8 @@ export default function Dashboard() {
                     </div>
 
                     {/* Top Departamentos */}
-                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-6">Top Departamentos</h3>
+                    <div className="p-6 overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                        <h3 className="mb-6 text-lg font-medium text-gray-900">Top Departamentos</h3>
                         <div className="space-y-4">
                             {metrics.topDepartments.map((dept, index) => (
                                 <div key={dept.name} className="flex items-center justify-between">
@@ -253,6 +273,221 @@ export default function Dashboard() {
                                 </div>
                             ))}
                         </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-4">
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                                <CardTitle className="text-sm font-medium">
+                                    Receitas do Mês
+                                </CardTitle>
+                                <TrendingUp className="w-4 h-4 text-green-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {formatCurrency(summary.current_month_income)}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {summary.income_variation > 0 ? '+' : ''}
+                                    {summary.income_variation}% em relação ao mês anterior
+                                </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                                <CardTitle className="text-sm font-medium">
+                                    Despesas do Mês
+                                </CardTitle>
+                                <TrendingDown className="w-4 h-4 text-red-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {formatCurrency(summary.current_month_expenses)}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {summary.expenses_variation > 0 ? '+' : ''}
+                                    {summary.expenses_variation}% em relação ao mês anterior
+                                </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                                <CardTitle className="text-sm font-medium">
+                                    Saldo do Mês
+                                </CardTitle>
+                                <DollarSign className="w-4 h-4 text-blue-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {formatCurrency(summary.current_month_balance)}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {summary.balance_variation > 0 ? '+' : ''}
+                                    {summary.balance_variation}% em relação ao mês anterior
+                                </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                                <CardTitle className="text-sm font-medium">
+                                    Previsão do Mês
+                                </CardTitle>
+                                <Calendar className="w-4 h-4 text-purple-500" />
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-2xl font-bold">
+                                    {formatCurrency(summary.current_month_forecast)}
+                                </div>
+                                <p className="text-xs text-muted-foreground">
+                                    {summary.forecast_variation > 0 ? '+' : ''}
+                                    {summary.forecast_variation}% em relação ao mês anterior
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 mb-6 md:grid-cols-2">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Fluxo de Caixa</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-[300px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={cashFlow}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis
+                                                dataKey="date"
+                                                tickFormatter={formatDate}
+                                            />
+                                            <YAxis tickFormatter={formatCurrency} />
+                                            <Tooltip
+                                                formatter={formatCurrency}
+                                                labelFormatter={formatDate}
+                                            />
+                                            <Legend />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="income"
+                                                name="Receitas"
+                                                stroke="#22c55e"
+                                                strokeWidth={2}
+                                            />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="expenses"
+                                                name="Despesas"
+                                                stroke="#ef4444"
+                                                strokeWidth={2}
+                                            />
+                                            <Line
+                                                type="monotone"
+                                                dataKey="balance"
+                                                name="Saldo"
+                                                stroke="#3b82f6"
+                                                strokeWidth={2}
+                                            />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Previsão Próximos Meses</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="h-[300px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={forecast}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis
+                                                dataKey="date"
+                                                tickFormatter={formatDate}
+                                            />
+                                            <YAxis tickFormatter={formatCurrency} />
+                                            <Tooltip
+                                                formatter={formatCurrency}
+                                                labelFormatter={formatDate}
+                                            />
+                                            <Legend />
+                                            <Bar
+                                                dataKey="income"
+                                                name="Receitas"
+                                                fill="#22c55e"
+                                            />
+                                            <Bar
+                                                dataKey="expenses"
+                                                name="Despesas"
+                                                fill="#ef4444"
+                                            />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Maiores Receitas</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {summary.top_incomes.map((income) => (
+                                        <div key={income.id} className="flex items-center">
+                                            <div className="flex-1 space-y-1">
+                                                <p className="text-sm font-medium leading-none">
+                                                    {income.description}
+                                                </p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {income.category}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-sm font-medium text-green-500">
+                                                    {formatCurrency(income.amount)}
+                                                </p>
+                                                <ArrowUpRight className="w-4 h-4 text-green-500" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
+
+                        <Card>
+                            <CardHeader>
+                                <CardTitle>Maiores Despesas</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-4">
+                                    {summary.top_expenses.map((expense) => (
+                                        <div key={expense.id} className="flex items-center">
+                                            <div className="flex-1 space-y-1">
+                                                <p className="text-sm font-medium leading-none">
+                                                    {expense.description}
+                                                </p>
+                                                <p className="text-sm text-muted-foreground">
+                                                    {expense.category}
+                                                </p>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <p className="text-sm font-medium text-red-500">
+                                                    {formatCurrency(expense.amount)}
+                                                </p>
+                                                <ArrowDownRight className="w-4 h-4 text-red-500" />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </CardContent>
+                        </Card>
                     </div>
                 </div>
             </div>
