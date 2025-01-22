@@ -79,7 +79,7 @@ export default function CompanySettings() {
             {/* Informações Básicas */}
             <div>
                 <div className="flex items-center gap-2 mb-4">
-                    <Building2 className="h-5 w-5 text-gray-400" />
+                    <Building2 className="w-5 h-5 text-gray-400" />
                     <h3 className="text-lg font-medium text-gray-900">
                         Informações Básicas
                     </h3>
@@ -93,7 +93,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.basic.name}
                             onChange={(e) => handleChange('basic', 'name', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -105,7 +105,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.basic.tradingName}
                             onChange={(e) => handleChange('basic', 'tradingName', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -117,7 +117,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.basic.cnpj}
                             onChange={(e) => handleChange('basic', 'cnpj', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -129,7 +129,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.basic.stateRegistration}
                             onChange={(e) => handleChange('basic', 'stateRegistration', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -141,7 +141,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.basic.municipalRegistration}
                             onChange={(e) => handleChange('basic', 'municipalRegistration', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -153,7 +153,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.basic.website}
                             onChange={(e) => handleChange('basic', 'website', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -161,15 +161,15 @@ export default function CompanySettings() {
                         <label className="block text-sm font-medium text-gray-700">
                             Logo
                         </label>
-                        <div className="mt-1 flex items-center gap-4">
+                        <div className="flex items-center gap-4 mt-1">
                             {settings.basic.logo && (
                                 <img
                                     src={settings.basic.logo}
                                     alt="Logo da empresa"
-                                    className="h-12 w-12 object-contain"
+                                    className="object-contain w-12 h-12"
                                 />
                             )}
-                            <label className="cursor-pointer inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50">
+                            <label className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm cursor-pointer hover:bg-gray-50">
                                 <Upload className="h-4 w-4 mr-1.5" />
                                 Enviar Logo
                                 <input
@@ -187,7 +187,7 @@ export default function CompanySettings() {
             {/* Endereço */}
             <div>
                 <div className="flex items-center gap-2 mb-4">
-                    <MapPin className="h-5 w-5 text-gray-400" />
+                    <MapPin className="w-5 h-5 text-gray-400" />
                     <h3 className="text-lg font-medium text-gray-900">
                         Endereço
                     </h3>
@@ -201,7 +201,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.address.street}
                             onChange={(e) => handleChange('address', 'street', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -213,7 +213,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.address.number}
                             onChange={(e) => handleChange('address', 'number', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -225,7 +225,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.address.complement}
                             onChange={(e) => handleChange('address', 'complement', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -237,7 +237,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.address.neighborhood}
                             onChange={(e) => handleChange('address', 'neighborhood', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -249,7 +249,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.address.zipCode}
                             onChange={(e) => handleChange('address', 'zipCode', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -261,7 +261,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.address.city}
                             onChange={(e) => handleChange('address', 'city', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -273,7 +273,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.address.state}
                             onChange={(e) => handleChange('address', 'state', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
                 </div>
@@ -282,7 +282,7 @@ export default function CompanySettings() {
             {/* Contato */}
             <div>
                 <div className="flex items-center gap-2 mb-4">
-                    <Phone className="h-5 w-5 text-gray-400" />
+                    <Phone className="w-5 h-5 text-gray-400" />
                     <h3 className="text-lg font-medium text-gray-900">
                         Contato
                     </h3>
@@ -296,7 +296,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.contact.phone}
                             onChange={(e) => handleChange('contact', 'phone', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -308,7 +308,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.contact.mobile}
                             onChange={(e) => handleChange('contact', 'mobile', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -320,7 +320,7 @@ export default function CompanySettings() {
                             type="email"
                             value={settings.contact.email}
                             onChange={(e) => handleChange('contact', 'email', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -332,7 +332,7 @@ export default function CompanySettings() {
                             type="email"
                             value={settings.contact.alternativeEmail}
                             onChange={(e) => handleChange('contact', 'alternativeEmail', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
                 </div>
@@ -341,7 +341,7 @@ export default function CompanySettings() {
             {/* Informações Fiscais */}
             <div>
                 <div className="flex items-center gap-2 mb-4">
-                    <FileText className="h-5 w-5 text-gray-400" />
+                    <FileText className="w-5 h-5 text-gray-400" />
                     <h3 className="text-lg font-medium text-gray-900">
                         Informações Fiscais
                     </h3>
@@ -354,7 +354,7 @@ export default function CompanySettings() {
                         <select
                             value={settings.fiscal.regime}
                             onChange={(e) => handleChange('fiscal', 'regime', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         >
                             <option value="simples">Simples Nacional</option>
                             <option value="lucro_presumido">Lucro Presumido</option>
@@ -370,7 +370,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.fiscal.cnae}
                             onChange={(e) => handleChange('fiscal', 'cnae', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -382,7 +382,7 @@ export default function CompanySettings() {
                             value={settings.fiscal.activityDescription}
                             onChange={(e) => handleChange('fiscal', 'activityDescription', e.target.value)}
                             rows={3}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -394,7 +394,7 @@ export default function CompanySettings() {
                             type="text"
                             value={settings.fiscal.municipalService}
                             onChange={(e) => handleChange('fiscal', 'municipalService', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         />
                     </div>
 
@@ -405,7 +405,7 @@ export default function CompanySettings() {
                         <select
                             value={settings.fiscal.taxRegime}
                             onChange={(e) => handleChange('fiscal', 'taxRegime', e.target.value)}
-                            className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            className="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500"
                         >
                             <option value="normal">Normal</option>
                             <option value="simples">Simples Nacional</option>
@@ -428,11 +428,11 @@ export default function CompanySettings() {
 
             {/* Modal de Confirmação de Reset */}
             {showResetModal && (
-                <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-                        <div className="px-6 py-4 border-b flex items-center justify-between">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-500 bg-opacity-75">
+                    <div className="w-full max-w-md bg-white rounded-lg shadow-xl">
+                        <div className="flex items-center justify-between px-6 py-4 border-b">
                             <div className="flex items-center gap-2">
-                                <AlertTriangle className="h-5 w-5 text-red-500" />
+                                <AlertTriangle className="w-5 h-5 text-red-500" />
                                 <h3 className="text-lg font-medium text-gray-900">
                                     Confirmar Redefinição
                                 </h3>
@@ -441,7 +441,7 @@ export default function CompanySettings() {
                                 onClick={() => setShowResetModal(false)}
                                 className="text-gray-400 hover:text-gray-500"
                             >
-                                <X className="h-5 w-5" />
+                                <X className="w-5 h-5" />
                             </button>
                         </div>
 
@@ -451,7 +451,7 @@ export default function CompanySettings() {
                             </p>
                         </div>
 
-                        <div className="px-6 py-4 border-t bg-gray-50 flex justify-end gap-3">
+                        <div className="flex justify-end gap-3 px-6 py-4 border-t bg-gray-50">
                             <button
                                 onClick={() => setShowResetModal(false)}
                                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-800"
@@ -460,7 +460,7 @@ export default function CompanySettings() {
                             </button>
                             <button
                                 onClick={handleReset}
-                                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md shadow-sm"
+                                className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md shadow-sm hover:bg-red-700"
                             >
                                 <AlertTriangle className="h-4 w-4 mr-1.5" />
                                 Redefinir
