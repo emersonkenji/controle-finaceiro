@@ -80,9 +80,9 @@ const menuItems = [
         title: 'Logística',
         icon: Truck,
         submenu: [
-            { title: 'Entregas', route: 'logistics.deliveries', icon: Truck },
+            { title: 'Entregas', route: 'logistics.deliveries.index', icon: Truck },
             { title: 'Rastreamento', route: 'logistics.tracking', icon: LineChart },
-            { title: 'Transportadoras', route: 'logistics.carriers', icon: Building2 }
+            { title: 'Transportadoras', route: 'logistics.carriers.index', icon: Building2 }
         ]
     },
     {

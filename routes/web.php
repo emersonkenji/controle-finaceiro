@@ -33,6 +33,8 @@ use App\Http\Controllers\PayableController;
 use App\Http\Controllers\CashFlowController;
 use App\Http\Controllers\DREController;
 use App\Http\Controllers\BankReconciliationController;
+use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\CarrierController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -163,6 +165,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/products/{product}/stock', [ProductStockController::class, 'index'])->name('products.stock.index');
         Route::post('/products/{product}/stock/adjust', [ProductStockController::class, 'adjust'])->name('products.stock.adjust');
         Route::get('/products/{product}/stock/history', [ProductStockController::class, 'history'])->name('products.stock.history');
+
+        // Logística
+        Route::prefix('logistics')->name('logistics.')->group(function () {
+            Route::resource('deliveries', DeliveryController::class);
+            Route::resource('carriers', CarrierController::class);
+            Route::get('tracking', [DeliveryController::class, 'tracking'])->name('tracking');
+        });
 
         // Produtos
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
