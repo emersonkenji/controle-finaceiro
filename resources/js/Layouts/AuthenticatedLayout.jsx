@@ -5,10 +5,72 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import Sidebar from '@/Components/Sidebar';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
+import NotificationsMenu from '@/Components/NotificationsMenu';
+import {
+    Home,
+    Users,
+    Package,
+    DollarSign,
+    FileText,
+    BarChart2,
+    Settings,
+    ChevronDown,
+    ChevronRight,
+    ShoppingCart,
+    Wallet,
+    PieChart,
+    CreditCard,
+    PiggyBank,
+    TrendingUp
+} from 'lucide-react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const user = usePage().props.auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [openMenus, setOpenMenus] = useState({
+        financial: false,
+        reports: false
+    });
+
+    const toggleMenu = (menu) => {
+        setOpenMenus(prev => ({
+            ...prev,
+            [menu]: !prev[menu]
+        }));
+    };
+
+    const navigation = [
+        { name: 'Dashboard', href: '/', icon: Home },
+        { name: 'Clientes', href: '/clients', icon: Users },
+        { name: 'Produtos', href: '/products', icon: Package },
+        { name: 'Vendas', href: '/sales', icon: ShoppingCart },
+        {
+            name: 'Financeiro',
+            icon: DollarSign,
+            submenu: [
+                { name: 'Visão Geral', href: '/financial', icon: PieChart },
+                { name: 'Contas a Receber', href: '/financial/receivables', icon: Wallet },
+                { name: 'Contas a Pagar', href: '/financial/payables', icon: CreditCard },
+                { name: 'Fluxo de Caixa', href: '/financial/cash-flow', icon: TrendingUp },
+                { name: 'DRE', href: '/financial/dre', icon: BarChart2 },
+                { name: 'Conciliação Bancária', href: '/financial/bank-reconciliation', icon: PiggyBank },
+                { name: 'Centro de Custos', href: '/financial/cost-center', icon: PieChart }
+            ]
+        },
+        {
+            name: 'Relatórios',
+            icon: FileText,
+            submenu: [
+                { name: 'Todos os Relatórios', href: '/reports', icon: FileText },
+                { name: 'Metas e Alertas', href: '/reports/goals', icon: BarChart2 }
+            ]
+        },
+        { name: 'Configurações', href: '/settings', icon: Settings }
+    ];
+
+    const isActive = (href) => {
+        return window.location.pathname === href;
+    };
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -24,7 +86,11 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
-                            <div className="relative ms-3">
+                            <div className="ms-3">
+                                <NotificationsMenu />
+                            </div>
+
+                            <div className="ms-3 relative">
                                 <Dropdown>
                                     <Dropdown.Trigger>
                                         <span className="inline-flex rounded-md">

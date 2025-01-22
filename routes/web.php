@@ -28,9 +28,17 @@ Route::middleware('auth')->group(function () {
         return Inertia::render('Clients/Index');
     })->name('clients');
 
+    Route::get('/clients/create', function() {
+        return Inertia::render('Clients/Create');
+    })->name('clients.create');
+
     Route::get('/products', function() {
         return Inertia::render('Products/Index');
     })->name('products');
+
+    Route::get('/products/create', function() {
+        return Inertia::render('Products/Create');
+    })->name('products.create');
 
     Route::get('/sales', function() {
         return Inertia::render('Sales/Index');
@@ -39,6 +47,34 @@ Route::middleware('auth')->group(function () {
     Route::get('/financial', function() {
         return Inertia::render('Financial/Index');
     })->name('financial');
+
+    Route::get('/financial/receivables', function() {
+        return Inertia::render('Financial/Receivables');
+    })->name('financial.receivables');
+
+    Route::get('/financial/payables', function() {
+        return Inertia::render('Financial/Payables');
+    })->name('financial.payables');
+
+    Route::get('/financial/cash-flow', function() {
+        return Inertia::render('Financial/CashFlow');
+    })->name('financial.cash-flow');
+
+    Route::get('/financial/dre', function() {
+        return Inertia::render('Financial/DRE');
+    })->name('financial.dre');
+
+    Route::get('/financial/bank-reconciliation', function() {
+        return Inertia::render('Financial/BankReconciliation');
+    })->name('financial.bank-reconciliation');
+
+    Route::get('/financial/cost-center', function() {
+        return Inertia::render('Financial/CostCenter');
+    })->name('financial.cost-center');
+
+    Route::get('/financial/dashboard', function() {
+        return Inertia::render('Financial/Dashboard');
+    })->name('financial.dashboard');
 
     Route::get('/employees', function() {
         return Inertia::render('Employees/Index');
@@ -53,7 +89,7 @@ Route::middleware('auth')->group(function () {
     })->name('reports');
 
     Route::get('/settings', function() {
-        return Inertia::render('Settings/Index');
+        return Inertia::render('Settings');
     })->name('settings');
 });
 
