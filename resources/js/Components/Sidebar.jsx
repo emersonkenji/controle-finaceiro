@@ -20,7 +20,17 @@ import {
     FileText,
     Package,
     History,
-    BadgeDollarSign
+    BadgeDollarSign,
+    ArrowDown,
+    ArrowUp,
+    ArrowUpDown,
+    ChartPie,
+    Receipt,
+    Box,
+    Star,
+    Database,
+    FileBarChart,
+    CheckCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
@@ -56,14 +66,14 @@ const menuItems = [
     },
     {
         title: 'Financeiro',
-        icon: DollarSign,
+        icon: BarChart3,
         submenu: [
-            { title: 'Dashboard', route: 'financial.dashboard', icon: LayoutDashboard },
-            { title: 'Contas a Receber', route: 'financial.receivables.index', icon: CreditCard },
-            { title: 'Contas a Pagar', route: 'financial.payables.index', icon: Wallet },
-            { title: 'Fluxo de Caixa', route: 'financial.cash-flow', icon: LineChart },
-            { title: 'DRE', route: 'financial.dre', icon: FileText },
-            { title: 'Conciliação Bancária', route: 'financial.bank-reconciliation.index', icon: BadgeDollarSign },
+            { title: 'Dashboard', route: 'financial.dashboard', icon: BarChart3 },
+            { title: 'Contas a Receber', route: 'financial.receivables.index', icon: ArrowDown },
+            { title: 'Contas a Pagar', route: 'financial.payables.index', icon: ArrowUp },
+            { title: 'Fluxo de Caixa', route: 'financial.cash-flow', icon: ArrowUpDown },
+            { title: 'DRE', route: 'financial.dre', icon: FileBarChart },
+            { title: 'Conciliação Bancária', route: 'financial.bank-reconciliation.index', icon: CheckCircle },
             { title: 'Centro de Custos', route: 'financial.cost-centers.index', icon: Building2 }
         ]
     },
@@ -78,32 +88,31 @@ const menuItems = [
     },
     {
         title: 'Logística',
-        icon: Truck,
+        icon: Box,
         submenu: [
-            { title: 'Entregas', route: 'logistics.deliveries.index', icon: Truck },
-            { title: 'Rastreamento', route: 'logistics.tracking', icon: LineChart },
-            { title: 'Transportadoras', route: 'logistics.carriers.index', icon: Building2 }
+            { title: 'Entregas', route: 'logistics.deliveries.index', icon: Box },
+            { title: 'Transportadoras', route: 'logistics.carriers.index', icon: Star }
         ]
     },
     {
         title: 'Relatórios',
-        icon: BarChart3,
+        icon: Receipt,
         submenu: [
-            { title: 'Vendas', route: 'reports.sales', icon: Store },
-            { title: 'Financeiro', route: 'reports.financial', icon: DollarSign },
-            { title: 'Estoque', route: 'reports.inventory', icon: Package },
-            { title: 'Clientes', route: 'reports.customers', icon: Users },
-            { title: 'Produtos', route: 'reports.products', icon: ShoppingCart }
+            { title: 'Vendas', route: 'reports.sales.index', icon: Receipt },
+            { title: 'Financeiro', route: 'reports.financial.index', icon: BarChart3 },
+            { title: 'Estoque', route: 'reports.inventory.index', icon: Box },
+            { title: 'Clientes', route: 'reports.customers.index', icon: Users },
+            { title: 'Produtos', route: 'reports.products.index', icon: Box }
         ]
     },
     {
         title: 'Configurações',
         icon: Settings,
         submenu: [
-            { title: 'Geral', route: 'settings.general', icon: Settings },
-            { title: 'Empresa', route: 'settings.company', icon: Building2 },
-            { title: 'Usuários', route: 'settings.users', icon: Users },
-            { title: 'Backup', route: 'settings.backup', icon: FileText }
+            { title: 'Geral', route: 'settings.general.index', icon: Settings },
+            { title: 'Empresa', route: 'settings.company.index', icon: Building2 },
+            { title: 'Usuários', route: 'settings.users.index', icon: Users },
+            { title: 'Backup', route: 'settings.backup.index', icon: Database }
         ]
     }
 ];
