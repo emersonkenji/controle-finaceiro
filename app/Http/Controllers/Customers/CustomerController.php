@@ -47,10 +47,11 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
+        dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:customers',
-            'document' => 'required|string|unique:customers',
+            'email' => 'email|unique:customers',
+            'document' => 'string|unique:customers',
             'phone' => 'required|string',
             'customer_category_id' => 'nullable|exists:customer_categories,id',
             'address' => 'required|array',
@@ -60,7 +61,7 @@ class CustomerController extends Controller
             'address.neighborhood' => 'required|string',
             'address.city' => 'required|string',
             'address.state' => 'required|string',
-            'address.zip_code' => 'required|string',
+            'address.cep' => 'required|string',
             'notes' => 'nullable|string',
             'birth_date' => 'nullable|date',
             'type' => 'required|in:pf,pj'

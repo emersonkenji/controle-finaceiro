@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('account');
             $table->string('document')->nullable();
             $table->boolean('reconciled')->default(false);
-            $table->foreignId('transaction_id')->nullable()->constrained()->onDelete('set null');
+            // $table->foreignId('transaction_id')->nullable()->constrained()->onDelete('set null');
             $table->timestamps();
         });
     }

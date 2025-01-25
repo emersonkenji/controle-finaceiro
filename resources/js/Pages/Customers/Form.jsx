@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
@@ -102,9 +102,18 @@ export default function CustomerForm({ customer = null }) {
     };
 
     const onSubmit = (data) => {
-        console.log(data);
-        // Implementar lógica de salvamento
+        if (isEditing) {
+            // Se estiver editando, use router.put para atualizar
+            router.put(route('customers.update', { customer: customer.id }), data);
+        } else {
+            // Se estiver criando, use router.post para criar novo registro
+            router.post(route('customers.store'), data);
+        }
     };
+    // const onSubmit = (data) => {
+    //     console.log(data);
+    //     post(route('customers.store'), data);
+    // };
 
     return (
         <AuthenticatedLayout>
@@ -174,7 +183,8 @@ export default function CustomerForm({ customer = null }) {
                                                                     <FormControl>
                                                                         <InputMask
                                                                             mask="(99) 99999-9999"
-                                                                            value={field.value}
+                                                                            maskPlaceholder=""
+                                                                            value={field.value || ''}
                                                                             onChange={field.onChange}
                                                                         >
                                                                             {(inputProps) => <Input {...inputProps} />}
@@ -189,13 +199,14 @@ export default function CustomerForm({ customer = null }) {
                                                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                                         <FormField
                                                             control={form.control}
-                                                            name="cpf"
+                                                            name="document"
                                                             render={({ field }) => (
                                                                 <FormItem>
                                                                     <FormLabel>CPF</FormLabel>
                                                                     <FormControl>
                                                                         <InputMask
                                                                             mask="999.999.999-99"
+                                                                            maskPlaceholder=""
                                                                             value={field.value}
                                                                             onChange={field.onChange}
                                                                         >
@@ -256,6 +267,7 @@ export default function CustomerForm({ customer = null }) {
                                                                     <FormControl>
                                                                         <InputMask
                                                                             mask="99999-999"
+                                                                            maskPlaceholder=""
                                                                             value={field.value}
                                                                             onChange={(e) => {
                                                                                 field.onChange(e);
