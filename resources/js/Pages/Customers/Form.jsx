@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { useRef, useState, useEffect } from 'react';
+import { Head, router, useForm as useInertiaForm } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
@@ -35,17 +35,19 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import InputMask from 'react-input-mask';
+// import InputMask from 'react-input-mask';
+// import { InputMask } from 'input-mask-react'
+import { useMask } from '@react-input/mask';
 
 const formSchema = z.object({
     name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
     email: z.string().email('Email inválido'),
-    cpf: z.string().min(14, 'CPF inválido'),
-    phone: z.string().min(14, 'Telefone inválido'),
+    document: z.string().min(11, 'CPF inválido'),
+    phone: z.string().min(10, 'Telefone inválido'),
     category: z.string(),
     status: z.string(),
     address: z.object({
-        cep: z.string().min(9, 'CEP inválido'),
+        cep: z.string().min(8, 'CEP inválido'),
         street: z.string().min(3, 'Rua deve ter no mínimo 3 caracteres'),
         number: z.string(),
         complement: z.string().optional(),
@@ -58,13 +60,17 @@ const formSchema = z.object({
 export default function CustomerForm({ customer = null }) {
     const [loading, setLoading] = useState(false);
     const isEditing = !!customer;
+    const [phoneMaskedValue, setPhoneMaskedValue] = useState('');
+    const [cpfMaskedValue, setCpfMaskedValue] = useState('');
+     const [cepMaskedValue, setCepMaskedValue] = useState('');
+
 
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: customer || {
             name: '',
             email: '',
-            cpf: '',
+            document: '',
             phone: '',
             category: 'regular',
             status: 'active',
@@ -79,6 +85,14 @@ export default function CustomerForm({ customer = null }) {
             }
         }
     });
+
+    useEffect(() => {
+        if (customer) {
+            setPhoneMaskedValue(customer.phone || '');
+             setCpfMaskedValue(customer.cpf || '');
+            setCepMaskedValue(customer.address?.cep || '')
+        }
+    }, [customer]);
 
     const searchCEP = async (cep) => {
         if (cep.replace(/\D/g, '').length !== 8) return;
@@ -101,19 +115,20 @@ export default function CustomerForm({ customer = null }) {
         }
     };
 
+    // const { post } = useInertiaForm();
+
     const onSubmit = (data) => {
-        if (isEditing) {
-            // Se estiver editando, use router.put para atualizar
-            router.put(route('customers.update', { customer: customer.id }), data);
-        } else {
-            // Se estiver criando, use router.post para criar novo registro
-            router.post(route('customers.store'), data);
+        const dataToSend = {
+            ...data,
+            phone: phoneMaskedValue.replace(/\D/g, ''),
+             cpf: cpfMaskedValue.replace(/\D/g, ''),
+             address:{
+                 ...data.address,
+                cep: cepMaskedValue.replace(/\D/g, '')
+             }
         }
+        router.post(route('customers.store'), dataToSend);
     };
-    // const onSubmit = (data) => {
-    //     console.log(data);
-    //     post(route('customers.store'), data);
-    // };
 
     return (
         <AuthenticatedLayout>
@@ -181,14 +196,15 @@ export default function CustomerForm({ customer = null }) {
                                                                 <FormItem>
                                                                     <FormLabel>Telefone</FormLabel>
                                                                     <FormControl>
-                                                                        <InputMask
-                                                                            mask="(99) 99999-9999"
-                                                                            maskPlaceholder=""
-                                                                            value={field.value || ''}
-                                                                            onChange={field.onChange}
-                                                                        >
-                                                                            {(inputProps) => <Input {...inputProps} />}
-                                                                        </InputMask>
+                                                                             <Input
+                                                                             ref={useMask({mask: '(__) _____-____',replacement: { _: /\d/ },})}
+                                                                             placeholder='(99) 99999-9999'
+                                                                             value={phoneMaskedValue}
+                                                                                onChange={(e) =>{
+                                                                                 setPhoneMaskedValue(e.target.value)
+                                                                                   field.onChange(e)
+                                                                              }}
+                                                                            />
                                                                     </FormControl>
                                                                     <FormMessage />
                                                                 </FormItem>
@@ -204,14 +220,15 @@ export default function CustomerForm({ customer = null }) {
                                                                 <FormItem>
                                                                     <FormLabel>CPF</FormLabel>
                                                                     <FormControl>
-                                                                        <InputMask
-                                                                            mask="999.999.999-99"
-                                                                            maskPlaceholder=""
-                                                                            value={field.value}
-                                                                            onChange={field.onChange}
-                                                                        >
-                                                                            {(inputProps) => <Input {...inputProps} />}
-                                                                        </InputMask>
+                                                                             <Input
+                                                                                ref={useMask({mask: '___.___.___.__', replacement: { _: /\d/ }, })}
+                                                                                placeholder='999.999.999-99'
+                                                                                value={cpfMaskedValue}
+                                                                                onChange={(e) => {
+                                                                                    setCpfMaskedValue(e.target.value)
+                                                                                    field.onChange(e)
+                                                                                }}
+                                                                            />
                                                                     </FormControl>
                                                                     <FormMessage />
                                                                 </FormItem>
@@ -265,17 +282,16 @@ export default function CustomerForm({ customer = null }) {
                                                                 <FormItem>
                                                                     <FormLabel>CEP</FormLabel>
                                                                     <FormControl>
-                                                                        <InputMask
-                                                                            mask="99999-999"
-                                                                            maskPlaceholder=""
-                                                                            value={field.value}
-                                                                            onChange={(e) => {
-                                                                                field.onChange(e);
-                                                                                searchCEP(e.target.value);
-                                                                            }}
-                                                                        >
-                                                                            {(inputProps) => <Input {...inputProps} />}
-                                                                        </InputMask>
+                                                                              <Input
+                                                                                ref={useMask({mask: '_____-___', replacement: { _: /\d/ }, })}
+                                                                                placeholder='99999-999'
+                                                                                value={cepMaskedValue}
+                                                                                 onChange={(e) => {
+                                                                                    setCepMaskedValue(e.target.value)
+                                                                                    field.onChange(e);
+                                                                                    searchCEP(e.target.value);
+                                                                                }}
+                                                                            />
                                                                     </FormControl>
                                                                     <FormMessage />
                                                                 </FormItem>
