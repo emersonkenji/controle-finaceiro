@@ -35,8 +35,6 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-// import InputMask from 'react-input-mask';
-// import { InputMask } from 'input-mask-react'
 import { useMask } from '@react-input/mask';
 import TabsFormBasic from '@/Components/Pages/Custumers/TabsFormBasic';
 
@@ -61,9 +59,6 @@ const formSchema = z.object({
 export default function CustomerForm({ customer = null }) {
     const [loading, setLoading] = useState(false);
     const isEditing = !!customer;
-    const [phoneMaskedValue, setPhoneMaskedValue] = useState('');
-    const [cpfMaskedValue, setCpfMaskedValue] = useState('');
-     const [cepMaskedValue, setCepMaskedValue] = useState('');
 
 
     const form = useForm({
@@ -89,9 +84,9 @@ export default function CustomerForm({ customer = null }) {
 
     useEffect(() => {
         if (customer) {
-            setPhoneMaskedValue(customer.phone || '');
-             setCpfMaskedValue(customer.cpf || '');
-            setCepMaskedValue(customer.address?.cep || '')
+            // setPhoneMaskedValue(customer.phone || '');
+            //  setCpfMaskedValue(customer.document || '');
+            // setCepMaskedValue(customer.address?.cep || '')
         }
     }, [customer]);
 
@@ -116,17 +111,10 @@ export default function CustomerForm({ customer = null }) {
         }
     };
 
-    // const { post } = useInertiaForm();
 
     const onSubmit = (data) => {
         const dataToSend = {
             ...data,
-            phone: phoneMaskedValue.replace(/\D/g, ''),
-             cpf: cpfMaskedValue.replace(/\D/g, ''),
-             address:{
-                 ...data.address,
-                cep: cepMaskedValue.replace(/\D/g, '')
-             }
         }
         router.post(route('customers.store'), dataToSend);
     };
@@ -153,8 +141,7 @@ export default function CustomerForm({ customer = null }) {
                                 <Form {...form}>
                                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                                         <TabsContent value="basic">
-                                        <TabsFormBasic form={form}/>
-
+                                            <TabsFormBasic form={form}/>
                                         </TabsContent>
 
                                         <TabsContent value="address">
@@ -177,10 +164,9 @@ export default function CustomerForm({ customer = null }) {
                                                                               <Input
                                                                                 ref={useMask({mask: '_____-___', replacement: { _: /\d/ }, })}
                                                                                 placeholder='99999-999'
-                                                                                value={cepMaskedValue}
-                                                                                 onChange={(e) => {
-                                                                                    setCepMaskedValue(e.target.value)
-                                                                                    field.onChange(e);
+                                                                                 {...field}
+                                                                                onChange={(e) => {
+                                                                                  field.onChange(e)
                                                                                     searchCEP(e.target.value);
                                                                                 }}
                                                                             />

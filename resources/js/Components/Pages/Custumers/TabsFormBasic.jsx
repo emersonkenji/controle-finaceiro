@@ -24,8 +24,6 @@ import { useMask } from "@react-input/mask";
 import React, { useState } from "react";
 
 export default function TabsFormBasic({ form }) {
-    const [phoneMaskedValue, setPhoneMaskedValue] = useState("");
-    const [cpfMaskedValue, setCpfMaskedValue] = useState("");
 
     return (
         <Card>
@@ -78,9 +76,7 @@ export default function TabsFormBasic({ form }) {
                                             replacement: { _: /\d/ },
                                         })}
                                         placeholder="(99) 99999-9999"
-                                        value={phoneMaskedValue}
-                                        onChange={(e) => {
-                                            setPhoneMaskedValue(e.target.value);
+                                      onChange={(e) => {
                                             field.onChange(e);
                                         }}
                                     />
@@ -105,9 +101,7 @@ export default function TabsFormBasic({ form }) {
                                             replacement: { _: /\d/ },
                                         })}
                                         placeholder="999.999.999-99"
-                                        value={cpfMaskedValue}
-                                        onChange={(e) => {
-                                            setCpfMaskedValue(e.target.value);
+                                      onChange={(e) => {
                                             field.onChange(e);
                                         }}
                                     />
