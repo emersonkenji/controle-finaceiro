@@ -92,4 +92,19 @@ class Transaction extends Model
         return $query->whereNull('paid_date')
             ->where('due_date', '<', now());
     }
+
+    public function getFormattedAmountAttribute()
+    {
+        return number_format($this->amount, 2, ',', '.');
+    }
+
+    public function getFormattedDueDateAttribute()
+    {
+        return $this->due_date ? $this->due_date->format('d/m/Y') : null;
+    }
+
+    public function getFormattedPaidDateAttribute()
+    {
+        return $this->paid_date ? $this->paid_date->format('d/m/Y') : null;
+    }
 }

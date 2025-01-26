@@ -27,9 +27,9 @@ class Customer extends Model
         'birth_date' => 'date',
     ];
 
-    public function category()
+    public function history()
     {
-        return $this->belongsTo(CustomerCategory::class, 'customer_category_id');
+        return $this->hasMany(CustomerHistory::class);
     }
 
     public function documents()
@@ -37,13 +37,13 @@ class Customer extends Model
         return $this->hasMany(CustomerDocument::class);
     }
 
-    public function history()
-    {
-        return $this->hasMany(CustomerHistory::class);
-    }
-
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(CustomerCategory::class, 'customer_category_id');
     }
 }

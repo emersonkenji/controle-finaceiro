@@ -75,4 +75,23 @@ class Product extends Model
     {
         return $this->morphMany(Image::class, 'imageable');
     }
+
+    public function getFormattedPriceAttribute()
+    {
+        return 'R$ ' . number_format($this->price, 2, ',', '.');
+    }
+
+    public function getFormattedCostPriceAttribute()
+    {
+        return 'R$ ' . number_format($this->cost_price, 2, ',', '.');
+    }
+
+    public function getFormattedStatusAttribute()
+    {
+        return match ($this->status) {
+            'active' => 'Ativo',
+            'inactive' => 'Inativo',
+            default => ucfirst($this->status),
+        };
+    }
 }

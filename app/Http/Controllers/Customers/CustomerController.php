@@ -30,11 +30,11 @@ class CustomerController extends Controller
             })
             ->with('category')
             ->paginate(10)
-            ->withQueryString();
+            ->appends($request->only(['search', 'category_id', 'sort', 'direction']));
 
         return Inertia::render('Customers/Index', [
             'customers' => $customers,
-            'filters' => $request->only(['search', 'category_id', 'sort', 'direction'])
+            'filters' => $request->only(['search', 'category_id', 'sort', 'direction']),
         ]);
     }
 
@@ -47,13 +47,12 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'email|unique:customers',
-            'document' => 'string|unique:customers',
+            'email' => 'nullable|email|unique:customers',
+            'document' => 'nullable|string|unique:customers',
             'phone' => 'required|string',
-            'customer_category_id' => 'nullable|exists:customer_categories,id',
+            'category' => 'nullable|string',
             'address' => 'required|array',
             'address.street' => 'required|string',
             'address.number' => 'required|string',
@@ -62,10 +61,13 @@ class CustomerController extends Controller
             'address.city' => 'required|string',
             'address.state' => 'required|string',
             'address.cep' => 'required|string',
-            'notes' => 'nullable|string',
-            'birth_date' => 'nullable|date',
-            'type' => 'required|in:pf,pj'
+            'status' => 'required|in:active,inactive,blocked',
         ]);
+
+        // Remove caracteres especiais do documento
+        if (isset($validated['document'])) {
+            $validated['document'] = preg_replace('/[^0-9]/', '', $validated['document']);
+        }
 
         $customer = Customer::create($validated);
 
@@ -97,7 +99,7 @@ class CustomerController extends Controller
             'address.neighborhood' => 'required|string',
             'address.city' => 'required|string',
             'address.state' => 'required|string',
-            'address.zip_code' => 'required|string',
+            'address.cep' => 'required|string',
             'notes' => 'nullable|string',
             'birth_date' => 'nullable|date',
             'type' => 'required|in:pf,pj'

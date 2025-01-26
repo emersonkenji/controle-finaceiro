@@ -28,4 +28,20 @@ class Carrier extends Model
     {
         return $this->hasMany(Delivery::class);
     }
+
+    public function getFormattedPhoneAttribute()
+    {
+        if (!$this->contact_phone) {
+            return null;
+        }
+        $phone = preg_replace('/[^0-9]/', '', $this->contact_phone);
+        $ddd = substr($phone, 0, 2);
+        $number = substr($phone, 2);
+        if (strlen($phone) === 10) {
+            return "($ddd) " . substr($number, 0, 4) . '-' . substr($number, 4);
+        } elseif (strlen($phone) === 11) {
+             return "($ddd) " . substr($number, 0, 5) . '-' . substr($number, 5);
+        }
+        return $this->contact_phone;
+    }
 }

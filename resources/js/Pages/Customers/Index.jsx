@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import {
     Table,
@@ -28,26 +28,38 @@ import {
     History,
     FileText
 } from 'lucide-react';
+import { Pagination } from "@/Components/ui/pagination";
 
-export default function CustomersIndex() {
-    const [search, setSearch] = useState('');
+export default function CustomersIndex({ customers, filters }) {
+    const [searchQuery, setSearchQuery] = useState(filters.search || '');
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [selectedCustomer, setSelectedCustomer] = useState(null);
 
-    // Dados de exemplo - substituir por dados reais do backend
-    const customers = [
-        {
-            id: 1,
-            name: 'João Silva',
-            email: 'joao@email.com',
-            phone: '(11) 99999-9999',
-            cpf: '123.456.789-00',
-            score: 85,
-            status: 'active',
-            category: 'VIP',
-            totalPurchases: 12500.00,
-            lastPurchase: '2024-01-15'
-        },
-        // ... mais clientes
-    ];
+    const handleSearch = (e) => {
+        e.preventDefault();
+        router.get(route('customers.index'), { search: searchQuery }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
+    };
+
+    const handleDelete = (customer) => {
+        if (confirm('Tem certeza que deseja excluir este cliente?')) {
+            router.delete(route('customers.destroy', customer.id));
+        }
+    };
+
+    const handleEdit = (customer) => {
+        router.get(route('customers.edit', customer.id));
+    };
+
+    const handleViewHistory = (customer) => {
+        router.get(route('customers.history.index', customer.id));
+    };
+
+    const handleViewDocuments = (customer) => {
+        router.get(route('customers.documents.index', customer.id));
+    };
 
     return (
         <AuthenticatedLayout>
@@ -65,31 +77,28 @@ export default function CustomersIndex() {
                                         Clientes
                                     </h2>
                                 </div>
-                                <Button>
+                                <Button onClick={() => router.get(route('customers.create'))}>
                                     <Plus className="h-4 w-4 mr-2" />
                                     Novo Cliente
                                 </Button>
                             </div>
 
                             {/* Filtros e Busca */}
-                            <div className="mt-4 flex gap-4">
+                            <form onSubmit={handleSearch} className="mt-4 flex gap-4">
                                 <div className="relative flex-1">
                                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
                                     <Input
                                         type="text"
                                         placeholder="Buscar clientes..."
-                                        value={search}
-                                        onChange={(e) => setSearch(e.target.value)}
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
                                         className="pl-9"
                                     />
                                 </div>
-                                <Button variant="outline">
-                                    Filtros Avançados
+                                <Button type="submit" variant="secondary">
+                                    Buscar
                                 </Button>
-                                <Button variant="outline">
-                                    Exportar
-                                </Button>
-                            </div>
+                            </form>
                         </div>
 
                         {/* Tabela de Clientes */}
@@ -107,7 +116,7 @@ export default function CustomersIndex() {
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                    {customers.map((customer) => (
+                                    {customers.data.map((customer) => (
                                         <TableRow key={customer.id}>
                                             <TableCell>
                                                 <div>
@@ -152,19 +161,22 @@ export default function CustomersIndex() {
                                                         </Button>
                                                     </DropdownMenuTrigger>
                                                     <DropdownMenuContent align="end">
-                                                        <DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleEdit(customer)}>
                                                             <Edit className="h-4 w-4 mr-2" />
                                                             Editar
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleViewHistory(customer)}>
                                                             <History className="h-4 w-4 mr-2" />
                                                             Histórico
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem>
+                                                        <DropdownMenuItem onClick={() => handleViewDocuments(customer)}>
                                                             <FileText className="h-4 w-4 mr-2" />
                                                             Documentos
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem className="text-red-600">
+                                                        <DropdownMenuItem
+                                                            className="text-red-600"
+                                                            onClick={() => handleDelete(customer)}
+                                                        >
                                                             <Trash2 className="h-4 w-4 mr-2" />
                                                             Excluir
                                                         </DropdownMenuItem>
@@ -175,6 +187,15 @@ export default function CustomersIndex() {
                                     ))}
                                 </TableBody>
                             </Table>
+
+                            {/* Paginação */}
+                            <div className="mt-4">
+                                <Pagination
+                                    links={customers.links}
+                                    current_page={customers.current_page}
+                                    last_page={customers.last_page}
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>

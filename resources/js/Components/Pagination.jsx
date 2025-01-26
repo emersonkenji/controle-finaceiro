@@ -1,80 +1,47 @@
-import { Link } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '@/Components/ui/button';
+import { Button } from "@/Components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { router } from "@inertiajs/react";
 
-export default function Pagination({ links }) {
+export default function Pagination({ links, current_page, last_page }) {
+    const handlePageChange = (url) => {
+        if (url) {
+            router.get(url);
+        }
+    };
+
     return (
-        <div className="flex items-center justify-between">
-            <div className="flex justify-between flex-1 sm:hidden">
-                {links.prev && (
-                    <Link href={links.prev}>
-                        <Button variant="outline" size="sm">
-                            Anterior
-                        </Button>
-                    </Link>
-                )}
-                {links.next && (
-                    <Link href={links.next}>
-                        <Button variant="outline" size="sm">
-                            Próximo
-                        </Button>
-                    </Link>
-                )}
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                    <p className="text-sm text-gray-700">
-                        Mostrando{' '}
-                        <span className="font-medium">{links.from}</span>{' '}
-                        até{' '}
-                        <span className="font-medium">{links.to}</span>{' '}
-                        de{' '}
-                        <span className="font-medium">{links.total}</span>{' '}
-                        resultados
-                    </p>
-                </div>
-                <div>
-                    <nav className="relative z-0 inline-flex -space-x-px rounded-md shadow-sm" aria-label="Paginação">
-                        {links.links.map((link, index) => {
-                            if (link.url === null) {
-                                return (
-                                    <span
-                                        key={index}
-                                        className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300"
-                                    >
-                                        {link.label === '&laquo; Previous' ? (
-                                            <ChevronLeft className="w-4 h-4" />
-                                        ) : link.label === 'Next &raquo;' ? (
-                                            <ChevronRight className="w-4 h-4" />
-                                        ) : (
-                                            link.label
-                                        )}
-                                    </span>
-                                );
-                            }
+        <div className="flex items-center justify-between px-2">
+            <div className="flex items-center gap-2">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(links[0].url)}
+                    disabled={current_page === 1}
+                >
+                    <ChevronLeft className="w-4 h-4" />
+                    Anterior
+                </Button>
 
-                            return (
-                                <Link
-                                    key={index}
-                                    href={link.url}
-                                    className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                                        link.active
-                                            ? 'z-10 bg-primary text-white border-primary'
-                                            : 'bg-white text-gray-500 hover:bg-gray-50 border-gray-300'
-                                    }`}
-                                >
-                                    {link.label === '&laquo; Previous' ? (
-                                        <ChevronLeft className="w-4 h-4" />
-                                    ) : link.label === 'Next &raquo;' ? (
-                                        <ChevronRight className="w-4 h-4" />
-                                    ) : (
-                                        link.label
-                                    )}
-                                </Link>
-                            );
-                        })}
-                    </nav>
-                </div>
+                {links.slice(1, -1).map((link, i) => (
+                    <Button
+                        key={i}
+                        variant={link.active ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => handlePageChange(link.url)}
+                    >
+                        {link.label}
+                    </Button>
+                ))}
+
+                <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(links[links.length - 1].url)}
+                    disabled={current_page === last_page}
+                >
+                    Próximo
+                    <ChevronRight className="w-4 h-4" />
+                </Button>
             </div>
         </div>
     );

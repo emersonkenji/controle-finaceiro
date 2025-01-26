@@ -74,4 +74,24 @@ class Order extends Model
         $lastNumber = $lastOrder ? intval(substr($lastOrder->number, 3)) : 0;
         return 'PED' . str_pad($lastNumber + 1, 7, '0', STR_PAD_LEFT);
     }
+
+    public function getFormattedSubtotalAttribute()
+    {
+        return number_format($this->subtotal, 2, ',', '.');
+    }
+
+    public function getFormattedDiscountValueAttribute()
+    {
+        return number_format($this->discount_value, 2, ',', '.');
+    }
+
+    public function getFormattedShippingCostAttribute()
+    {
+        return number_format($this->shipping_cost, 2, ',', '.');
+    }
+
+    public function getFormattedTotalAttribute()
+    {
+        return number_format($this->total, 2, ',', '.');
+    }
 }

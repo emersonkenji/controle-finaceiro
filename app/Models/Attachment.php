@@ -63,4 +63,9 @@ class Attachment extends Model
             default => 'file'
         };
     }
+
+    public function getUrlAttribute()
+    {
+        return asset('storage/' . $this->path);
+    }
 }

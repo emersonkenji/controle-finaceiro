@@ -66,12 +66,6 @@ class Employee extends Model
         return $this->morphMany(Attachment::class, 'attachable');
     }
 
-    // Escopo para funcionários ativos
-    public function scopeActive($query)
-    {
-        return $query->where('status', true);
-    }
-
     // Método para calcular o total de vendas
     public function totalSales($startDate = null, $endDate = null)
     {
@@ -88,6 +82,12 @@ class Employee extends Model
         return $query->sum('total');
     }
 
+    // Escopo para funcionários ativos
+    public function scopeActive($query)
+    {
+        return $query->where('status', true);
+    }
+
     // Método para calcular o total de comissões
     public function totalCommissions($startDate = null, $endDate = null)
     {
@@ -96,11 +96,15 @@ class Employee extends Model
         if ($startDate) {
             $query->where('date', '>=', $startDate);
         }
+    }
 
-        if ($endDate) {
-            $query->where('date', '<=', $endDate);
-        }
+    public function getFormattedHireDateAttribute()
+    {
+        return $this->hire_date ? $this->hire_date->format('d/m/Y') : null;
+    }
 
-        return $query->sum('amount');
+    public function getFormattedTerminationDateAttribute()
+    {
+        return $this->termination_date ? $this->termination_date->format('d/m/Y') : null;
     }
 }

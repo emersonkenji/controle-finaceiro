@@ -70,4 +70,19 @@ class CostCenter extends Model
         if ($this->budget <= 0) return 0;
         return ($this->total_spent / $this->budget) * 100;
     }
+
+    public function getFormattedBudgetAttribute()
+    {
+        return number_format($this->budget, 2, ',', '.');
+    }
+
+    public function getFormattedTotalSpentAttribute()
+    {
+        return number_format($this->total_spent, 2, ',', '.');
+    }
+
+    public function getFormattedBudgetBalanceAttribute()
+    {
+         return number_format($this->budget_balance, 2, ',', '.');
+    }
 }

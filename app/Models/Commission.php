@@ -50,4 +50,19 @@ class Commission extends Model
     {
         return $query->where('status', false);
     }
+
+    public function getFormattedAmountAttribute()
+    {
+        return number_format($this->amount, 2, ',', '.');
+    }
+
+    public function getFormattedRateAttribute()
+    {
+        return number_format($this->rate, 2, ',', '.');
+    }
+
+    public function getFormattedDateAttribute()
+    {
+        return $this->date ? $this->date->format('d/m/Y') : null;
+    }
 }

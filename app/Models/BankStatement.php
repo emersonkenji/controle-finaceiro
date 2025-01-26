@@ -31,4 +31,9 @@ class BankStatement extends Model
     {
         return $this->belongsTo(Transaction::class);
     }
+
+    public function getFormattedAmountAttribute()
+    {
+        return 'R$ ' . number_format($this->amount, 2, ',', '.');
+    }
 }
