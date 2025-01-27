@@ -59,12 +59,46 @@ return new class extends Migration
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
         });
+
+        Schema::create('order_histories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->string('type');
+            $table->text('description');
+            $table->json('data')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     public function down()
     {
-        Schema::dropIfExists('order_payments');
-        Schema::dropIfExists('order_items');
-        Schema::dropIfExists('orders');
+        // Verifique se a tabela 'order_items' existe antes de tentar remover a chave estrangeira
+        if (Schema::hasTable('order_items')) {
+            Schema::table('order_items', function (Blueprint $table) {
+                $table->dropForeign(['order_id']);  // Remove a chave estrangeira da tabela 'order_items'
+            });
+        }
+
+        // Verifique se a tabela 'order_payments' existe antes de tentar remover a chave estrangeira
+        if (Schema::hasTable('order_payments')) {
+            Schema::table('order_payments', function (Blueprint $table) {
+                $table->dropForeign(['order_id']);  // Remove a chave estrangeira da tabela 'order_payments'
+            });
+        }
+
+        // Verifique se a tabela 'order_histories' existe antes de tentar remover a chave estrangeira
+        if (Schema::hasTable('order_histories')) {
+            Schema::table('order_histories', function (Blueprint $table) {
+                $table->dropForeign(['order_id']);  // Remove a chave estrangeira da tabela 'order_histories'
+            });
+        }
+
+        // Remover as tabelas na ordem correta
+        Schema::dropIfExists('order_payments'); // Remove 'order_payments' primeiro
+        Schema::dropIfExists('order_items'); // Remove 'order_items' depois
+        Schema::dropIfExists('order_histories'); // Remove 'order_histories' depois
+        Schema::dropIfExists('orders'); // Por último, remove 'orders'
     }
 };

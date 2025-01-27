@@ -43,7 +43,7 @@ import {
     Badge,
     MoreHorizontal,
 } from 'lucide-react';
-import Pagination from '@/Components/Pagination';
+import PaginationComponent  from '@/Components/Pagination';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -348,9 +348,10 @@ export default function ProductsIndex({ products, categories, filters }) {
                             </Table>
 
                             {/* Paginação */}
+                            {console.log(products.links)}
                             {products.links && (
                                 <div className="mt-4">
-                                    <Pagination links={products} />
+                                    <PaginationComponent links={products.links} />
                                 </div>
                             )}
                         </div>

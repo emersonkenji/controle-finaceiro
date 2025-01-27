@@ -29,10 +29,27 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('employee_histories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('employee_id')->constrained()->cascadeOnDelete();
+            $table->string('type');
+            $table->text('description');
+            $table->datetime('date');
+            $table->json('data')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     public function down()
     {
+        // Remover a chave estrangeira na tabela 'employee_histories'
+        Schema::table('employee_histories', function (Blueprint $table) {
+            $table->dropForeign(['employee_id']);  // Remover a chave estrangeira de 'employee_id'
+        });
         Schema::dropIfExists('employees');
+        Schema::dropIfExists('employee_histories');
     }
 };

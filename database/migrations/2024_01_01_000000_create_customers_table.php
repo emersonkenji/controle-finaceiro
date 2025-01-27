@@ -67,6 +67,7 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->string('type');
             $table->text('description');
+            $table->decimal('value', 10, 2)->nullable();
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 

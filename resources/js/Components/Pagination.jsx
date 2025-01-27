@@ -1,48 +1,49 @@
-import { Button } from "@/Components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
-import { router } from "@inertiajs/react";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+    PaginationEllipsis,
+  } from "@components/ui/pagination";
 
-export default function Pagination({ links, current_page, last_page }) {
-    const handlePageChange = (url) => {
-        if (url) {
-            router.get(url);
-        }
-    };
+// import { Pagination } from "./ui/pagination";
+
+  export default function PaginationComponent({ links }) {
+    // Filtrando links para exibir os itens válidos
+    const filteredLinks = links.filter(link => link.url !== null);
 
     return (
-        <div className="flex items-center justify-between px-2">
-            <div className="flex items-center gap-2">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(links[0].url)}
-                    disabled={current_page === 1}
-                >
-                    <ChevronLeft className="w-4 h-4" />
-                    Anterior
-                </Button>
+      <Pagination>
+        <PaginationContent>
+          {/* "Anterior" */}
+          {filteredLinks[0] && (
+            <PaginationItem>
+              <PaginationPrevious href={filteredLinks[0].url} isActive={filteredLinks[0].active}>
+                {filteredLinks[0].label}
+              </PaginationPrevious>
+            </PaginationItem>
+          )}
 
-                {links.slice(1, -1).map((link, i) => (
-                    <Button
-                        key={i}
-                        variant={link.active ? "default" : "outline"}
-                        size="sm"
-                        onClick={() => handlePageChange(link.url)}
-                    >
-                        {link.label}
-                    </Button>
-                ))}
+          {/* Paginação com número de páginas */}
+          {filteredLinks.slice(1, -1).map((link, index) => (
+            <PaginationItem key={index}>
+              <PaginationLink href={link.url} isActive={link.active}>
+                {link.label}
+              </PaginationLink>
+            </PaginationItem>
+          ))}
 
-                <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(links[links.length - 1].url)}
-                    disabled={current_page === last_page}
-                >
-                    Próximo
-                    <ChevronRight className="w-4 h-4" />
-                </Button>
-            </div>
-        </div>
+          {/* "Próximo" */}
+          {filteredLinks[filteredLinks.length - 1] && (
+            <PaginationItem>
+              <PaginationNext href={filteredLinks[filteredLinks.length - 1].url} isActive={filteredLinks[filteredLinks.length - 1].active}>
+                {filteredLinks[filteredLinks.length - 1].label}
+              </PaginationNext>
+            </PaginationItem>
+          )}
+        </PaginationContent>
+      </Pagination>
     );
-}
+  }

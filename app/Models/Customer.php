@@ -27,7 +27,7 @@ class Customer extends Model
 
     protected $casts = [
         'address' => 'array',
-        'birth_date' => 'date',
+        // 'birth_date' => 'date',
     ];
 
     public function history()

@@ -13,17 +13,17 @@ class Product extends Model
 
     protected $fillable = [
         'name',
-        'slug',
-        'description',
-        'category_id',
         'sku',
-        'barcode',
+        'description',
         'price',
         'cost_price',
         'stock',
         'min_stock',
+        'category_id',
+        'attributes',
+        'barcode',
+        'slug',
         'status',
-        'attributes'
     ];
 
     protected $casts = [

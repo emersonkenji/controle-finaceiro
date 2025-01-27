@@ -29,6 +29,8 @@ return new class extends Migration
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->unsignedBigInteger('category_id')->nullable();
             $table->json('attributes')->nullable();
+            $table->string('barcode')->nullable()->unique();
+            $table->string('slug')->unique();
             $table->timestamps();
             $table->softDeletes();
 
@@ -46,6 +48,7 @@ return new class extends Migration
             $table->integer('min_stock')->default(0);
             $table->json('attributes')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
@@ -76,14 +79,55 @@ return new class extends Migration
             $table->foreign('product_id')->references('id')->on('products')->onDelete('restrict');
             $table->foreign('product_variation_id')->references('id')->on('product_variations')->onDelete('restrict');
         });
+
+        Schema::create('product_price_histories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained();
+            $table->foreignId('product_variation_id')->nullable()->constrained();
+            $table->decimal('old_price', 10, 2);
+            $table->decimal('new_price', 10, 2);
+            $table->string('type'); // regular, cost, promotional
+            $table->text('reason')->nullable();
+            $table->foreignId('user_id')->constrained();
+            $table->timestamps();
+        });
     }
 
     public function down()
     {
+        // Verifique se as tabelas existem antes de tentar remover as chaves estrangeiras
+        if (Schema::hasTable('stock_movements')) {
+            Schema::table('stock_movements', function (Blueprint $table) {
+                $table->dropForeign(['product_id']);
+                $table->dropForeign(['product_variation_id']);
+            });
+        }
+
+        if (Schema::hasTable('product_images')) {
+            Schema::table('product_images', function (Blueprint $table) {
+                $table->dropForeign(['product_id']);
+            });
+        }
+
+        if (Schema::hasTable('product_variations')) {
+            Schema::table('product_variations', function (Blueprint $table) {
+                $table->dropForeign(['product_id']);
+            });
+        }
+
+        if (Schema::hasTable('products')) {
+            Schema::table('products', function (Blueprint $table) {
+                $table->dropForeign(['category_id']);
+            });
+        }
+
+        // Agora podemos excluir as tabelas sem erros de chave estrangeira
+        Schema::dropIfExists('product_price_histories');
         Schema::dropIfExists('stock_movements');
         Schema::dropIfExists('product_images');
         Schema::dropIfExists('product_variations');
         Schema::dropIfExists('products');
         Schema::dropIfExists('product_categories');
     }
+
 };

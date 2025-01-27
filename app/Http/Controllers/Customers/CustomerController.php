@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\CustomerCategory;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
-use App\Models\Customers\CustomerAddressModel ;
+use App\Models\Customers\CustomerAddressModel;
 
 class CustomerController extends Controller
 {
@@ -104,7 +104,7 @@ class CustomerController extends Controller
         return redirect()
             ->route('customers.index')
             ->with('success', 'Cliente cadastrado com sucesso!');
-            dd('Redirecionamento executado');
+        dd('Redirecionamento executado');
     }
 
     // public function store(Request $request)
@@ -142,35 +142,82 @@ class CustomerController extends Controller
 
     public function edit(Customer $customer)
     {
+
         // dd( $customer->load('address'));
         return Inertia::render('Customers/Create', [
             'customer' => $customer->load('address'), // Carrega o relacionamento se houver
         ]);
-
     }
 
     public function update(Request $request, Customer $customer)
     {
+        // dd($request->all());
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:customers,email,' . $customer->id,
-            'document' => 'required|string|unique:customers,document,' . $customer->id,
+            'email' => 'nullable|email|unique:customers,email,' . $customer->id,
             'phone' => 'required|string',
-            'customer_category_id' => 'nullable|exists:customer_categories,id',
-            'address' => 'required|array',
+            'category' => 'nullable|string',
+            'document_number' => 'nullable|string|unique:customers,document_number,' . $customer->id,
+            'document_type' => 'required|in:pf,pj',
+            'status' => 'required|in:active,inactive',
             'address.street' => 'required|string',
             'address.number' => 'required|string',
             'address.complement' => 'nullable|string',
             'address.neighborhood' => 'required|string',
             'address.city' => 'required|string',
             'address.state' => 'required|string',
-            'address.cep' => 'required|string',
+            'address.zip_code' => 'required|string',
+            'credit_limit' => 'nullable|numeric',
             'notes' => 'nullable|string',
-            'birth_date' => 'nullable|date',
-            'type' => 'required|in:pf,pj'
+        ], [
+            'name.required' => 'O campo nome é obrigatório.',
+            'name.string' => 'O nome deve ser uma string.',
+            'name.max' => 'O nome não pode ter mais que 255 caracteres.',
+            'email.email' => 'O e-mail deve ser válido.',
+            'email.unique' => 'Este e-mail já está em uso.',
+            'phone.required' => 'O campo telefone é obrigatório.',
+            'phone.string' => 'O telefone deve ser uma string.',
+            'category.string' => 'A categoria deve ser uma string.',
+            'document_number.string' => 'O número do documento deve ser uma string.',
+            'document_number.unique' => 'Este número de documento já está em uso.',
+            'document_type.required' => 'O campo tipo de documento é obrigatório.',
+            'document_type.in' => 'O tipo de documento selecionado é inválido. Apenas "pf" ou "pj" são aceitos.',
+            'status.required' => 'O campo status é obrigatório.',
+            'status.in' => 'O status selecionado é inválido. Apenas "active" ou "inactive" são aceitos.',
+            'address.required' => 'O campo endereço é obrigatório.',
+            'address.array' => 'O endereço deve ser um array.',
+            'address.street.required' => 'O campo rua é obrigatório.',
+            'address.street.string' => 'O campo rua deve ser uma string.',
+            'address.number.required' => 'O campo número é obrigatório.',
+            'address.number.string' => 'O campo número deve ser uma string.',
+            'address.complement.string' => 'O campo complemento deve ser uma string.',
+            'address.neighborhood.required' => 'O campo bairro é obrigatório.',
+            'address.neighborhood.string' => 'O campo bairro deve ser uma string.',
+            'address.city.required' => 'O campo cidade é obrigatório.',
+            'address.city.string' => 'O campo cidade deve ser uma string.',
+            'address.state.required' => 'O campo estado é obrigatório.',
+            'address.state.string' => 'O campo estado deve ser uma string.',
+            'address.zip_code.required' => 'O campo CEP é obrigatório.',
+            'address.zip_code.string' => 'O campo CEP deve ser uma string.',
+            'credit_limit.numeric' => 'O campo limite de crédito deve ser um número.',
+            'notes.string' => 'O campo observações deve ser uma string.'
         ]);
 
-        $customer->update($validated);
+        // Atualiza o endereço do cliente
+        $addressData = $validated['address'];
+        $customer->address()->update($addressData);
+
+        // Atualiza os dados do cliente
+        $customer->update([
+            'name' => $validated['name'],
+            'email' => $validated['email'] ?? $customer->email,
+            'phone' => $validated['phone'],
+            'document_number' => $validated['document_number'],
+            'document_type' => $validated['document_type'],
+            'status' => $validated['status'],
+            'credit_limit' => $validated['credit_limit'] ?? 0,
+            'notes' => $validated['notes'] ?? null,
+        ]);
 
         return redirect()
             ->route('customers.index')
