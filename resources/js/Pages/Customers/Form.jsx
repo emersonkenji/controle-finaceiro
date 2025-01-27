@@ -35,18 +35,19 @@ import {
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useMask } from '@react-input/mask';
 import TabsFormBasic from '@/Components/Pages/Custumers/TabsFormBasic';
+import TabsFormAddress from '@/Components/Pages/Custumers/TabsFormAddress';
 
 const formSchema = z.object({
     name: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
     email: z.string().email('Email inválido'),
-    document: z.string().min(11, 'CPF inválido'),
+    document_type: z.string(),
+    document_number: z.string(),
     phone: z.string().min(10, 'Telefone inválido'),
     category: z.string(),
     status: z.string(),
     address: z.object({
-        cep: z.string().min(8, 'CEP inválido'),
+        zip_code: z.string().min(8, 'CEP inválido'),
         street: z.string().min(3, 'Rua deve ter no mínimo 3 caracteres'),
         number: z.string(),
         complement: z.string().optional(),
@@ -60,18 +61,24 @@ export default function CustomerForm({ customer = null }) {
     const [loading, setLoading] = useState(false);
     const isEditing = !!customer;
 
+    useEffect(() => {
+        console.log('useEffect executado'); // Adicione esta linha
+        console.log('Dados do cliente:', customer);
+      }, [customer]);
+
 
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: customer || {
             name: '',
             email: '',
-            document: '',
+            document_type: 'pf',
+            document_number: '',
             phone: '',
             category: 'regular',
             status: 'active',
             address: {
-                cep: '',
+                zip_code: '',
                 street: '',
                 number: '',
                 complement: '',
@@ -82,14 +89,6 @@ export default function CustomerForm({ customer = null }) {
         }
     });
 
-    useEffect(() => {
-        if (customer) {
-            // setPhoneMaskedValue(customer.phone || '');
-            //  setCpfMaskedValue(customer.document || '');
-            // setCepMaskedValue(customer.address?.cep || '')
-        }
-    }, [customer]);
-
     const searchCEP = async (cep) => {
         if (cep.replace(/\D/g, '').length !== 8) return;
 
@@ -97,12 +96,26 @@ export default function CustomerForm({ customer = null }) {
             setLoading(true);
             const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
             const data = await response.json();
+            console.log('Data:', data);
 
             if (!data.erro) {
-                form.setValue('address.street', data.logradouro);
-                form.setValue('address.neighborhood', data.bairro);
-                form.setValue('address.city', data.localidade);
-                form.setValue('address.state', data.uf);
+                console.log('Dados do ViaCEP:', data); // Log para debug
+                const uf = data.uf ? data.uf.toUpperCase() : '';
+
+                form.setValue('address.street', data.logradouro || '');
+                form.setValue('address.neighborhood', data.bairro || '');
+                form.setValue('address.city', data.localidade || '');
+
+                // Atualiza o estado com trigger
+                if (uf) {
+                    form.setValue('address.state', uf, {
+                        shouldValidate: true,
+                        shouldDirty: true,
+                        shouldTouch: true
+                    });
+                }
+            } else {
+                console.log('Erro no viacep:', data.erro);
             }
         } catch (error) {
             console.error('Erro ao buscar CEP:', error);
@@ -113,10 +126,17 @@ export default function CustomerForm({ customer = null }) {
 
 
     const onSubmit = (data) => {
+        console.log("Dados do formulário:", data);
+        console.log("Erros de validação:", form.formState.errors);
         const dataToSend = {
             ...data,
         }
-        router.post(route('customers.store'), dataToSend);
+        if(isEditing){
+            router.put(route('customers.update', customer.id), dataToSend);
+          }else {
+             router.post(route('customers.store'), dataToSend);
+          }
+        // router.post(route('customers.store'), dataToSend);
     };
 
     return (
@@ -145,147 +165,7 @@ export default function CustomerForm({ customer = null }) {
                                         </TabsContent>
 
                                         <TabsContent value="address">
-                                            <Card>
-                                                <CardHeader>
-                                                    <CardTitle>Endereço</CardTitle>
-                                                    <CardDescription>
-                                                        Informações de endereço do cliente
-                                                    </CardDescription>
-                                                </CardHeader>
-                                                <CardContent className="space-y-4">
-                                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                                        <FormField
-                                                            control={form.control}
-                                                            name="address.cep"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel>CEP</FormLabel>
-                                                                    <FormControl>
-                                                                              <Input
-                                                                                ref={useMask({mask: '_____-___', replacement: { _: /\d/ }, })}
-                                                                                placeholder='99999-999'
-                                                                                 {...field}
-                                                                                onChange={(e) => {
-                                                                                  field.onChange(e)
-                                                                                    searchCEP(e.target.value);
-                                                                                }}
-                                                                            />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                    </div>
-
-                                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                                        <div className="md:col-span-2">
-                                                            <FormField
-                                                                control={form.control}
-                                                                name="address.street"
-                                                                render={({ field }) => (
-                                                                    <FormItem>
-                                                                        <FormLabel>Rua</FormLabel>
-                                                                        <FormControl>
-                                                                            <Input {...field} />
-                                                                        </FormControl>
-                                                                        <FormMessage />
-                                                                    </FormItem>
-                                                                )}
-                                                            />
-                                                        </div>
-                                                        <FormField
-                                                            control={form.control}
-                                                            name="address.number"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel>Número</FormLabel>
-                                                                    <FormControl>
-                                                                        <Input {...field} />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                    </div>
-
-                                                    <FormField
-                                                        control={form.control}
-                                                        name="address.complement"
-                                                        render={({ field }) => (
-                                                            <FormItem>
-                                                                <FormLabel>Complemento</FormLabel>
-                                                                <FormControl>
-                                                                    <Input {...field} />
-                                                                </FormControl>
-                                                                <FormMessage />
-                                                            </FormItem>
-                                                        )}
-                                                    />
-
-                                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                                                        <FormField
-                                                            control={form.control}
-                                                            name="address.neighborhood"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel>Bairro</FormLabel>
-                                                                    <FormControl>
-                                                                        <Input {...field} />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-
-                                                        <FormField
-                                                            control={form.control}
-                                                            name="address.city"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel>Cidade</FormLabel>
-                                                                    <FormControl>
-                                                                        <Input {...field} />
-                                                                    </FormControl>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-
-                                                        <FormField
-                                                            control={form.control}
-                                                            name="address.state"
-                                                            render={({ field }) => (
-                                                                <FormItem>
-                                                                    <FormLabel>Estado</FormLabel>
-                                                                    <Select
-                                                                        onValueChange={field.onChange}
-                                                                        defaultValue={field.value}
-                                                                    >
-                                                                        <FormControl>
-                                                                            <SelectTrigger>
-                                                                                <SelectValue placeholder="UF" />
-                                                                            </SelectTrigger>
-                                                                        </FormControl>
-                                                                        <SelectContent>
-                                                                            {[
-                                                                                'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF',
-                                                                                'ES', 'GO', 'MA', 'MT', 'MS', 'MG', 'PA',
-                                                                                'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 'RS',
-                                                                                'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
-                                                                            ].map((state) => (
-                                                                                <SelectItem key={state} value={state}>
-                                                                                    {state}
-                                                                                </SelectItem>
-                                                                            ))}
-                                                                        </SelectContent>
-                                                                    </Select>
-                                                                    <FormMessage />
-                                                                </FormItem>
-                                                            )}
-                                                        />
-                                                    </div>
-                                                </CardContent>
-                                            </Card>
+                                            <TabsFormAddress form={form} searchCEP={searchCEP}/>
                                         </TabsContent>
 
                                         <TabsContent value="additional">
@@ -331,7 +211,7 @@ export default function CustomerForm({ customer = null }) {
                                                 Cancelar
                                             </Button>
                                             <Button type="submit" disabled={loading}>
-                                                {loading ? 'Salvando...' : 'Salvar'}
+                                            {loading ? 'Salvando...' : isEditing ? 'Editar' : 'Salvar'}
                                             </Button>
                                         </div>
                                     </form>

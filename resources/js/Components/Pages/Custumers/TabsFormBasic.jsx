@@ -24,6 +24,7 @@ import { useMask } from "@react-input/mask";
 import React, { useState } from "react";
 
 export default function TabsFormBasic({ form }) {
+    const [documentType, setDocumentType] = useState("pf");
 
     return (
         <Card>
@@ -41,7 +42,8 @@ export default function TabsFormBasic({ form }) {
                         <FormItem>
                             <FormLabel>Nome Completo</FormLabel>
                             <FormControl>
-                                <Input {...field} />
+                                <Input
+                                {...field} />
                             </FormControl>
                             <FormMessage />
                         </FormItem>
@@ -56,7 +58,10 @@ export default function TabsFormBasic({ form }) {
                             <FormItem>
                                 <FormLabel>Email</FormLabel>
                                 <FormControl>
-                                    <Input type="email" {...field} />
+                                    <Input
+                                        type="email"
+                                        {...field}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -76,9 +81,10 @@ export default function TabsFormBasic({ form }) {
                                             replacement: { _: /\d/ },
                                         })}
                                         placeholder="(99) 99999-9999"
-                                      onChange={(e) => {
+                                        onChange={(e) => {
                                             field.onChange(e);
                                         }}
+                                        value={field.value}
                                     />
                                 </FormControl>
                                 <FormMessage />
@@ -87,20 +93,74 @@ export default function TabsFormBasic({ form }) {
                     />
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="grid grid-cols-7 gap-4 md:grid-cols-7">
+
                     <FormField
                         control={form.control}
-                        name="document"
+                        name="document_type"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="col-span-1">
+                                <FormLabel>Tipo</FormLabel>
+                                <Select
+                                    onValueChange={(values) => {
+                                        setDocumentType(values);
+                                        field.onChange(values);
+                                    }}
+                                    defaultValue={field.value || "pf"}
+                                >
+                                    <FormControl>
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Documento" />
+                                        </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                        <SelectItem value="pf">CPF</SelectItem>
+                                        <SelectItem value="pj">CNPJ</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    {documentType === "pf" ? (
+                    <FormField
+                        control={form.control}
+                        name="document_number"
+                        render={({ field }) => (
+                            <FormItem className="col-span-3">
                                 <FormLabel>CPF</FormLabel>
                                 <FormControl>
                                     <Input
                                         ref={useMask({
-                                            mask: "___.___.___.__",
+                                            mask: "___.___.___-__",
                                             replacement: { _: /\d/ },
                                         })}
                                         placeholder="999.999.999-99"
+
+                                      onChange={(e) => {
+                                            field.onChange(e);
+
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    ):(<FormField
+                        control={form.control}
+                        name="document_number"
+                        render={({ field }) => (
+                            <FormItem className="col-span-3">
+                                <FormLabel>CNPJ</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        ref={useMask({
+                                            mask: "__.___.___/____-__",
+                                            replacement: { _: /\d/ },
+                                        })}
+                                        placeholder="12.123.123/0001-12"
+                                        value={field.value}
                                       onChange={(e) => {
                                             field.onChange(e);
                                         }}
@@ -109,13 +169,13 @@ export default function TabsFormBasic({ form }) {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    />)}
 
                     <FormField
                         control={form.control}
                         name="category"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="col-span-3">
                                 <FormLabel>Categoria</FormLabel>
                                 <Select
                                     onValueChange={field.onChange}

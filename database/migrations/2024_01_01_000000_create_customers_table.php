@@ -8,15 +8,22 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('customer_categories', function (Blueprint $table) {
+        // Tabela de endereços do cliente
+        Schema::create('customer_address', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->text('description')->nullable();
-            $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->string('street');
+            $table->string('number');
+            $table->text('complement')->nullable();
+            $table->string('neighborhood');
+            $table->string('city');
+            $table->string('state');
+            $table->string('zip_code');
+            $table->string('country')->default('Brasil'); // Corrigido o nome do campo
             $table->timestamps();
-            $table->softDeletes();
+            $table->softDeletes(); // Já inclui o campo `deleted_at`
         });
 
+        // Tabela de clientes
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -24,20 +31,22 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('document_number')->nullable();
             $table->string('document_type')->nullable();
-            $table->json('address')->nullable();
+            $table->unsignedBigInteger('address_id')->nullable(); // Chave estrangeira para endereço
             $table->enum('status', ['active', 'inactive'])->default('active');
-            $table->unsignedBigInteger('category_id')->nullable();
             $table->decimal('credit_limit', 10, 2)->default(0);
             $table->text('notes')->nullable();
+            $table->text('category')->nullable();
             $table->integer('score')->default(0);
             $table->decimal('total_purchases', 10, 2)->default(0);
             $table->timestamp('last_purchase_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
 
-            $table->foreign('category_id')->references('id')->on('customer_categories')->onDelete('set null');
+            // Chave estrangeira para endereço
+            $table->foreign('address_id')->references('id')->on('customer_address')->onDelete('set null');
         });
 
+        // Tabela de documentos dos clientes
         Schema::create('customer_documents', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('customer_id');
@@ -47,10 +56,12 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 
+            // Chaves estrangeiras
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
         });
 
+        // Tabela de histórico dos clientes
         Schema::create('customer_history', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('customer_id');
@@ -59,6 +70,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->timestamps();
 
+            // Chaves estrangeiras
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
         });
@@ -66,9 +78,10 @@ return new class extends Migration
 
     public function down()
     {
+        // Remover tabelas na ordem inversa
         Schema::dropIfExists('customer_history');
         Schema::dropIfExists('customer_documents');
         Schema::dropIfExists('customers');
-        Schema::dropIfExists('customer_categories');
+        Schema::dropIfExists('customer_address');
     }
 };

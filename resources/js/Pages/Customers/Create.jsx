@@ -2,7 +2,8 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
 import Form from './Form';
 
-export default function Create({ auth }) {
+export default function Create({ customer, auth }) {
+
     return (
         // <AuthenticatedLayout
         //         user={auth.user}
@@ -14,7 +15,7 @@ export default function Create({ auth }) {
             //      <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
             //          <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
             //              <div className="p-6">
-                             <Form />
+                             <Form customer={customer}/>
             //              </div>
             //          </div>
             //      </div>

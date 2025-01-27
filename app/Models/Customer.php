@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Customers\CustomerAddressModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,13 +14,15 @@ class Customer extends Model
     protected $fillable = [
         'name',
         'email',
-        'document',
         'phone',
-        'customer_category_id',
-        'address',
+        'document_number',
+        'document_type',
+        'address_id',
+        'status',
+        'credit_limit',
         'notes',
-        'birth_date',
-        'type'
+        'category',
+        'total_purchases'
     ];
 
     protected $casts = [
@@ -42,8 +45,13 @@ class Customer extends Model
         return $this->hasMany(Order::class);
     }
 
-    public function category()
+    public function address()
     {
-        return $this->belongsTo(CustomerCategory::class, 'customer_category_id');
+        return $this->belongsTo(CustomerAddressModel::class, 'address_id');
     }
+
+    // public function category()
+    // {
+    //     return $this->belongsTo(CustomerCategory::class, 'customer_category_id');
+    // }
 }
