@@ -53,14 +53,19 @@ export default function ProductForm({ product, categories }) {
         }
     }, [data.images]);
 
+
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        // Criando o FormData
         const formData = new FormData();
+
+        // Adicionando os dados normais
         Object.keys(data).forEach(key => {
             if (key === 'images') {
-                Array.from(data.images).forEach(file => {
-                    formData.append('images[]', file);
+                // Adicionando as imagens ao FormData
+                data.images.forEach(image => {
+                    formData.append('images[]', image);
                 });
             } else if (key === 'attributes' && typeof data[key] === 'object') {
                 formData.append(key, JSON.stringify(data[key]));
@@ -68,13 +73,14 @@ export default function ProductForm({ product, categories }) {
                 formData.append(key, data[key]);
             }
         });
+        console.log(data);
 
+        // Enviar a requisição usando Inertia
         if (product) {
-            post(route('products.update', product.id), {
-                _method: 'PUT',
-                ...formData
-            });
+            // Para atualização do produto
+            put(route('products.update', product.id), formData);
         } else {
+            // Para criar um novo produto
             post(route('products.store'), formData);
         }
     };

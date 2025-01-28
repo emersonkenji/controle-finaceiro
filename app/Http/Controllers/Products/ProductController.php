@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Products;
 
+use Log;
 use Inertia\Inertia;
 use App\Models\Product;
 use Illuminate\Http\Request;
@@ -67,58 +68,69 @@ class ProductController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'category_id' => 'nullable|exists:product_categories,id',
-            'sku' => 'nullable|string|unique:products,sku',
-            'barcode' => 'nullable|string|unique:products,barcode',
-            'price' => 'required|numeric|min:0',
-            'cost_price' => 'required|numeric|min:0',
-            'stock' => 'required|integer|min:0',
-            'min_stock' => 'required|integer|min:0',
-            'status' => 'required|in:active,inactive',
-            'attributes' => 'nullable|array',
-            'images.*' => 'nullable|image|max:2048'
-        ]);
+{
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'category_id' => 'nullable|exists:product_categories,id',
+        'sku' => 'nullable|string|unique:products,sku',
+        'barcode' => 'nullable|string|unique:products,barcode',
+        'price' => 'required|numeric|min:0',
+        'cost_price' => 'required|numeric|min:0',
+        'stock' => 'required|integer|min:0',
+        'min_stock' => 'required|integer|min:0',
+        'status' => 'required|in:active,inactive',
+        'attributes' => 'nullable|array',
+        'images.*' => 'nullable|image|max:2048'
+    ]);
 
-        DB::beginTransaction();
+    DB::beginTransaction();
 
-        try {
-            $product = Product::create($validated);
+    try {
+        $product = Product::create($validated);
 
-            // Processa as imagens
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
-                    $path = $image->store('products', 'public');
-                    $product->images()->create([
-                        'path' => $path,
-                        'is_main' => $product->images()->count() === 0
-                    ]);
-                }
+        // Processa as imagens
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('products', 'public');
+                $product->images()->create([
+                    'path' => $path,
+                    'is_main' => $product->images()->count() === 0
+                ]);
             }
+        }
 
-            // Registra o movimento inicial de estoque
-            if ($validated['stock'] > 0) {
+        if (!Auth::check()) {
+            return back()->with('error', 'Usuário não autenticado');
+        }
+
+        // Registra o movimento inicial de estoque
+        if ($validated['stock'] > 0) {
+            try {
                 $product->stockMovements()->create([
                     'type' => 'entrada',
                     'quantity' => $validated['stock'],
                     'unit_cost' => $validated['cost_price'],
                     'description' => 'Estoque inicial',
-                    'user_id' => Auth::id()
+                    'user_id' => Auth::id(),
+                    'reference_type' => 'App\Models\Product',
+                    'reference_id' => $product->id
                 ]);
+            } catch (\Exception $e) {
+                \Log::error('Erro ao criar movimento de estoque: ' . $e->getMessage());
+                throw new \Exception('Erro ao registrar movimento de estoque: ' . $e->getMessage());
             }
-
-            DB::commit();
-
-            return redirect()->route('products.index')
-                ->with('success', 'Produto criado com sucesso.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Erro ao criar produto: ' . $e->getMessage());
         }
+        DB::commit();
+        return redirect()->route('products.index')
+            ->with('success', 'Produto criado com sucesso.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+
+        return back()->with('error', 'Erro ao criar produto: ' . $e->getMessage());
     }
+}
+
 
     public function show(Product $product)
     {

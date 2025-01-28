@@ -9,6 +9,8 @@ class ProductStockMovement extends Model
 {
     use HasFactory;
 
+    protected $table = 'stock_movements';  // Adicione esta linha
+
     protected $fillable = [
         'product_id',
         'product_variation_id',
@@ -17,7 +19,8 @@ class ProductStockMovement extends Model
         'reference_type',
         'reference_id',
         'description',
-        'unit_cost'
+        'unit_cost',
+        'user_id'
     ];
 
     protected $casts = [

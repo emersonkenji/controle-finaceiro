@@ -13,6 +13,9 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
+            $table->foreignId('parent_id')->nullable()->constrained('product_categories')->onDelete('set null');
+            $table->integer('order')->default(0);
+            $table->string('slug')->unique();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -71,13 +74,15 @@ return new class extends Migration
             $table->enum('type', ['entrada', 'saida']);
             $table->integer('quantity');
             $table->decimal('unit_cost', 10, 2)->nullable();
-            $table->string('reference_type');
-            $table->unsignedBigInteger('reference_id');
-            $table->text('notes')->nullable();
+            $table->string('reference_type')->nullable();  // Adicione nullable aqui
+            $table->unsignedBigInteger('reference_id')->nullable();  // Adicione nullable aqui
+            $table->text('description')->nullable();  // Adicione esta linha
+            $table->unsignedBigInteger('user_id');  // Adicione esta linha
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('restrict');
             $table->foreign('product_variation_id')->references('id')->on('product_variations')->onDelete('restrict');
+            $table->foreign('user_id')->references('id')->on('users');  // Adicione esta linha
         });
 
         Schema::create('product_price_histories', function (Blueprint $table) {

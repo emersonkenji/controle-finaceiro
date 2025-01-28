@@ -16,19 +16,15 @@ class ProductCategory extends Model
         'slug',
         'description',
         'parent_id',
+        'status',
         'order',
-        'status'
-    ];
-
-    protected $casts = [
-        'active' => 'boolean',
-        'order' => 'integer'
     ];
 
     protected static function boot()
     {
         parent::boot();
 
+        // Gerar slug automaticamente, se não fornecido
         static::creating(function ($category) {
             if (empty($category->slug)) {
                 $category->slug = Str::slug($category->name);

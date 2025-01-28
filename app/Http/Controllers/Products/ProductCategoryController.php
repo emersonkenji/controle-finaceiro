@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Products;
 
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\ProductCategory;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +47,7 @@ class ProductCategoryController extends Controller
 
     public function store(Request $request)
     {
-        dd($request->all());
+        // Validação
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -58,22 +59,39 @@ class ProductCategoryController extends Controller
         DB::beginTransaction();
 
         try {
+            // Verificar e definir o valor para o campo order
             if (empty($validated['order'])) {
                 $validated['order'] = ProductCategory::where('parent_id', $validated['parent_id'])
                     ->max('order') + 1;
             }
 
+            // Gerar slug, se não for informado
+            if (empty($validated['slug'])) {
+                $validated['slug'] = Str::slug($validated['name']);
+            }
+
+            // Criar a categoria
             $category = ProductCategory::create($validated);
+            // $category = ProductCategory::create([
+            //     'name' => $validated['name'],
+            //     'description' => $validated['description'],
+            //     'parent_id' => $validated['parent_id'],
+            //     'status' => $validated['status'],
+            //     'order' => $validated['order'],
+            //     'slug' => $validated['slug']
+            // ]);
+            // dd($category); // Verificar se está retornando corretamente
 
             DB::commit();
 
             return redirect()->route('products.categories.index')
                 ->with('success', 'Categoria criada com sucesso.');
         } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Erro ao criar categoria.');
+            DB::rollBack(); // Em caso de erro, rollback
+            return back()->with('error', 'Erro ao criar categoria: ' . $e->getMessage());
         }
     }
+
 
     public function edit(ProductCategory $category)
     {
