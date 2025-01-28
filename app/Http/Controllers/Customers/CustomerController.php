@@ -51,25 +51,58 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         // Validação dos dados
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:customers,email',
-            'phone' => 'required|string',
-            'category' => 'nullable|string',
-            'document_number' => 'nullable|string|unique:customers,document_number',
-            'document_type' => 'required|in:pf,pj',
-            'status' => 'required|in:active,inactive',
-            'address' => 'required|array',
-            'address.street' => 'required|string',
-            'address.number' => 'required|string',
-            'address.complement' => 'nullable|string',
-            'address.neighborhood' => 'required|string',
-            'address.city' => 'required|string',
-            'address.state' => 'required|string',
-            'address.zip_code' => 'required|string',
-            'credit_limit' => 'nullable|numeric',
-            'notes' => 'nullable|string',
-        ]);
+        $validated = $request->validate(
+            [
+                'name' => 'required|string|max:255',
+                'email' => 'nullable|email|unique:customers,email',
+                'phone' => 'required|string',
+                'category' => 'nullable|string',
+                'document_number' => 'nullable|string|unique:customers,document_number',
+                'document_type' => 'required|in:pf,pj',
+                'status' => 'required|in:active,inactive',
+                'address' => 'required|array',
+                'address.street' => 'required|string',
+                'address.number' => 'required|string',
+                'address.complement' => 'nullable|string',
+                'address.neighborhood' => 'required|string',
+                'address.city' => 'required|string',
+                'address.state' => 'required|string',
+                'address.zip_code' => 'required|string',
+                'credit_limit' => 'nullable|numeric',
+                'notes' => 'nullable|string',
+            ],
+            [
+                'name.required' => 'O campo nome é obrigatório',
+                'name.string' => 'O campo nome deve ser uma string',
+                'name.max' => 'O campo nome deve ter no máximo 255 caracteres',
+                'email.email' => 'O campo email deve ser um email válido',
+                'email.unique' => 'Este email já está em uso',
+                'phone.required' => 'O campo telefone é obrigatório',
+                'phone.string' => 'O campo telefone deve ser uma string',
+                'document_number.string' => 'O campo documento deve ser uma string',
+                'document_number.unique' => 'Este documento já está em uso',
+                'document_type.required' => 'O campo tipo de documento é obrigatório',
+                'document_type.in' => 'O campo tipo de documento deve ser pf ou pj',
+                'status.required' => 'O campo status é obrigatório',
+                'status.in' => 'O campo status deve ser ativo ou inativo',
+                'address.required' => 'O campo endereço é obrigatório',
+                'address.street.required' => 'O campo rua é obrigatório',
+                'address.street.string' => 'O campo rua deve ser uma string',
+                'address.number.required' => 'O campo número é obrigatório',
+                'address.number.string' => 'O campo número deve ser uma string',
+                'address.complement.string' => 'O campo complemento deve ser uma string',
+                'address.neighborhood.required' => 'O campo bairro é obrigatório',
+                'address.neighborhood.string' => 'O campo bairro deve ser uma string',
+                'address.city.required' => 'O campo cidade é obrigatório',
+                'address.city.string' => 'O campo cidade deve ser uma string',
+                'address.state.required' => 'O campo estado é obrigatório',
+                'address.state.string' => 'O campo estado deve ser uma string',
+                'address.zip_code.required' => 'O campo CEP é obrigatório',
+                'address.zip_code.string' => 'O campo CEP deve ser uma string',
+                'credit_limit.numeric' => 'O campo limite de crédito deve ser um número',
+                'notes.string' => 'O campo observações deve ser uma string',
+            ]
+        );
 
         // Remove caracteres especiais do documento
         if (isset($validated['document_number'])) {
@@ -114,8 +147,10 @@ class CustomerController extends Controller
     //         'name' => 'required|string|max:255',
     //         'email' => 'nullable|email|unique:customers',
     //         'phone' => 'required|string',
-    //         'document_number' => 'nullable|string|unique:customers',
+    //         'category' => 'nullable|string',
+    //         'document_number' => 'nullable|string|unique:customers,document_number'. $customer->id,
     //         'document_type' => 'required|in:pf,pj',
+    //         'status' => 'required|in:active,inactive',
     //         'address' => 'required|array',
     //         'address.street' => 'required|string',
     //         'address.number' => 'required|string',
@@ -123,21 +158,47 @@ class CustomerController extends Controller
     //         'address.neighborhood' => 'required|string',
     //         'address.city' => 'required|string',
     //         'address.state' => 'required|string',
-    //         'address.cep' => 'required|string',
-    //         'status' => 'required|in:active,inactive,blocked',
-    //         'category' => 'nullable|string',
+    //         'address.zip_code' => 'required|string',
+    //         'credit_limit' => 'nullable|numeric',
+    //         'notes' => 'nullable|string',
+    //     ],
+    //     [
+    //         'name.required' => 'O campo nome é obrigatório',
+    //         'name.string' => 'O campo nome deve ser uma string',
+    //         'name.max' => 'O campo nome deve ter no máximo 255 caracteres',
+    //         'email.email' => 'O campo email deve ser um email válido',
+    //         'email.unique' => 'Este email já está em uso',
+    //         'phone.required' => 'O campo telefone é obrigatório',
+    //         'phone.string' => 'O campo telefone deve ser uma string',
+    //         'document_number.string' => 'O campo documento deve ser uma string',
+    //         'document_number.unique' => 'Este documento já está em uso',
+    //         'document_type.required' => 'O campo tipo de documento é obrigatório',
+    //         'document_type.in' => 'O campo tipo de documento deve ser pf ou pj',
+    //         'status.required' => 'O campo status é obrigatório',
+    //         'status.in' => 'O campo status deve ser ativo ou inativo',
+    //         'address.required' => 'O campo endereço é obrigatório',
+    //         'address.street.required' => 'O campo rua é obrigatório',
+    //         'address.street.string' => 'O campo rua deve ser uma string',
+    //         'address.number.required' => 'O campo número é obrigatório',
+    //         'address.number.string' => 'O campo número deve ser uma string',
+    //         'address.complement.string' => 'O campo complemento deve ser uma string',
+    //         'address.neighborhood.required' => 'O campo bairro é obrigatório',
+    //         'address.neighborhood.string' => 'O campo bairro deve ser uma string',
+    //         'address.city.required' => 'O campo cidade é obrigatório',
+    //         'address.city.string' => 'O campo cidade deve ser uma string',
+    //         'address.state.required' => 'O campo estado é obrigatório',
+    //         'address.state.string' => 'O campo estado deve ser uma string',
+    //         'address.zip_code.required' => 'O campo CEP é obrigatório',
+    //         'address.zip_code.string' => 'O campo CEP deve ser uma string',
+    //         'credit_limit.numeric' => 'O campo limite de crédito deve ser um número',
+    //         'notes.string' => 'O campo observações deve ser uma string',
     //     ]);
 
-    //     // Remove caracteres especiais do documento
-    //     if (isset($validated['document'])) {
-    //         $validated['document'] = preg_replace('/[^0-9]/', '', $validated['document']);
-    //     }
-
-    //     $customer = Customer::create($validated);
+    //     $customer->update($validated);
 
     //     return redirect()
     //         ->route('customers.index')
-    //         ->with('success', 'Cliente cadastrado com sucesso!');
+    //         ->with('success', 'Cliente atualizado com sucesso!');
     // }
 
     public function edit(Customer $customer)
